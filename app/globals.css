@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sora: var(--font-sora);
+}
+
+/* Force-hide the default swiper icons that keep overriding the React Icons */
+.hero-swiper .swiper-button-next::after,
+.hero-swiper .swiper-button-prev::after {
+  content: "" !important;
+  display: none !important;
+}
+
+@keyframes cartBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.animate-cart-bounce {
+  animation: cartBounce 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
