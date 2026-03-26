@@ -13,7 +13,7 @@ export function BackButton({ className = "" }: BackButtonProps) {
   return (
     <button
       onClick={() => router.back()}
-      className={`lg:hidden flex items-center gap-1.5 px-3 py-2 -ml-2 text-gray-600 hover:text-black transition-colors active:scale-95 ${className}`}
+      className={`lg:hidden flex items-center gap-1.5 px-3 py-2 -ml-2 -mt-5 text-gray-600 hover:text-black transition-colors active:scale-95 ${className}`}
     >
       <div className="p-1 bg-white rounded-full shadow-sm border border-gray-100">
         <ChevronLeft size={18} />

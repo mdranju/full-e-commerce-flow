@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export function ProductCard({ product }: { product: any }) {
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-sm  group flex flex-col h-full">
+    <div className="bg-white rounded-lg overflow-hidden shadow-sm group flex flex-col h-full lg:transition-shadow lg:duration-300 lg:hover:shadow-[0_4px_24px_rgba(59,130,246,0.12)] lg:hover:border-blue-100 border border-transparent">
       <Link
         href={`/product/${product.slug}`}
         className="relative aspect-[1/1] block overflow-hidden  rounded-b-lg"
