@@ -3,12 +3,14 @@
 import { products } from "@/lib/data";
 import { addToCart } from "@/src/store/slices/cartSlice";
 import { ImageLightbox } from "@/components/product/ImageLightbox";
+import { ProductCard } from "@/components/product/ProductCard";
 import { BackButton } from "@/components/common/BackButton";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
+import { ShieldCheck, Truck, ArrowLeftRight, Clock } from "lucide-react";
 
 export default function ProductDetail({
   params,
@@ -152,7 +154,7 @@ export default function ProductDetail({
 
         {/* Product Info */}
         <div className="w-full md:w-1/2 flex flex-col items-start md:items-start text-center md:text-left">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 ">
             {product.name}
           </h1>
 
@@ -229,6 +231,52 @@ export default function ProductDetail({
                 </button>
               </div>
             </div>
+          </div>
+
+          {/* ── Desktop-only Product Highlights ── */}
+          <div className="hidden lg:grid grid-cols-2 gap-4 mt-6 w-full">
+            {[
+              {
+                icon: ShieldCheck,
+                title: "Premium Built",
+                desc: "Top quality materials",
+              },
+              {
+                icon: Truck,
+                title: "Fast Delivery",
+                desc: "2-3 days across BD",
+              },
+              {
+                icon: ArrowLeftRight,
+                title: "Easy Returns",
+                desc: "7 days return policy",
+              },
+              {
+                icon: Clock,
+                title: "24/7 Support",
+                desc: "Always here for you",
+              },
+            ].map((feature, i) => {
+              const Icon = feature.icon;
+              return (
+                <div
+                  key={i}
+                  className="glass-card p-4 rounded-2xl flex items-start gap-3 hover:bg-gray-50/50 transition-colors"
+                >
+                  <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl shrink-0">
+                    <Icon size={31} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-gray-900 mb-0.5">
+                      {feature.title}
+                    </p>
+                    <p className="text-xs text-gray-500 leading-tight">
+                      {feature.desc}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -346,6 +394,27 @@ export default function ProductDetail({
         isOpen={isLightboxOpen}
         onClose={() => setIsLightboxOpen(false)}
       />
+
+      {/* ── Desktop-only Related Products ── */}
+      <div className="hidden lg:block border-t border-gray-100 pt-16 mt-16 mb-8 section-reveal">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold hero-display tracking-wide uppercase text-gray-900">
+            You May Also Like
+          </h2>
+        </div>
+        <div className="grid grid-cols-4 gap-4 product-grid-desktop">
+          {products
+            .filter(
+              (p) => p.category === product.category && p.id !== product.id,
+            )
+            .slice(0, 4)
+            .map((p) => (
+              <div key={p.id} className="product-card-desktop">
+                <ProductCard product={p} />
+              </div>
+            ))}
+        </div>
+      </div>
     </div>
   );
 }

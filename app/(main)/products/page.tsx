@@ -36,8 +36,8 @@ export default function ProductsPage({
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <BackButton className="mb-4" />
-      <div className="flex flex-col gap-6 mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+      <div className="flex flex-col gap-6 mb-8 section-reveal">
+        <h1 className="text-3xl xl:text-4xl font-bold tracking-tight text-gray-900 hero-display">
           {search
             ? `Search Results for "${search}"`
             : category
@@ -51,9 +51,11 @@ export default function ProductsPage({
       </div>
 
       {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6 w-full">
+        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6 w-full product-grid-desktop">
           {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <div key={product.id} className="product-card-desktop">
+              <ProductCard product={product} />
+            </div>
           ))}
         </div>
       ) : (

@@ -58,7 +58,7 @@ export default function SettingsPage() {
         <ProfileSidebar />
 
         <div className="flex-1 w-full relative">
-          <BackButton className="mb-" />
+          <BackButton className="mb-4" />
           <div className="flex items-center gap-3 mb-8">
             <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
               <SettingsIcon size={24} />

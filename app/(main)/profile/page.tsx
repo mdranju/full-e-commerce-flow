@@ -66,7 +66,7 @@ export default function ProfilePage() {
         <ProfileSidebar />
 
         <div className="flex-1 w-full relative">
-          <BackButton className="mb-" />
+          <BackButton className="mb-4" />
           {/* Mobile User Header */}
           <div className="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm mb-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16 -z-10" />
