@@ -1,8 +1,10 @@
 import Image from "next/image";
+import { BackButton } from "@/components/common/BackButton";
 
 export default function TrackOrderPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 md:py-20">
+      <BackButton />
       <div className="max-w-xl mx-auto text-center">
         <h1 className="text-3xl font-bold mb-4">Track your order</h1>
         <p className="text-gray-600 mb-8">
