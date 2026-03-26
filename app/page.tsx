@@ -26,7 +26,7 @@ export default function Home() {
     },
     {
       id: 2,
-      image: "https://picsum.photos/seed/hero2/1920/900",
+      image: "/banner-ranju.jpg",
       alt: "Eid Special Collection 2",
     },
     {
@@ -46,7 +46,8 @@ export default function Home() {
     },
     {
       id: 6,
-      image: "https://picsum.photos/seed/hero8/1920/900",
+      // image: "https://picsum.photos/seed/hero8/1920/900",
+      image: "/banner.jpg",
       alt: "Eid Special Collection 3",
     },
   ];
@@ -55,7 +56,7 @@ export default function Home() {
     <div className="flex flex-col gap-8 pb-12">
       {/* Hero Banner */}
       <section className="max-w-7xl mx-auto w-full px-4">
-        <div className="relative w-full aspect-[21/10] md:aspect-[3/1.3] bg-gray-200 rounded-lg overflow-hidden mt-5">
+        <div className="relative w-full aspect-[20.8/9.8] md:aspect-[3/1.4] bg-gray-200 rounded-lg overflow-hidden mt-5">
           <Swiper
             spaceBetween={0}
             centeredSlides={true}
@@ -90,8 +91,10 @@ export default function Home() {
                 <Image
                   src={slide.image}
                   alt={slide.alt}
-                  fill
-                  className="object-cover cursor-pointer"
+                  width={1920}
+                  height={900}
+                  // fill
+                  className="object-cover cursor-pointer w-full h-full"
                   priority={slide.id === 1}
                 />
               </SwiperSlide>
@@ -102,20 +105,45 @@ export default function Home() {
 
       {/* Top Categories */}
       <section className="max-w-7xl mx-auto w-full px-4">
-        <h2 className="text-center text-xl font-bold mb-6 uppercase tracking-wider lg:mt-10 mt-2">
-          Top Categories
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className=" text-xl font-bold mb-6 uppercase tracking-wider lg:mt-10 mt-2">
+            Top Categories
+          </h2>
+          <Link
+            href="/categories"
+            className=" text-base font-semibold mb-6 tracking-wider lg:mt-10 mt-2 underline hover:text-gray-500"
+          >
+            All Categories
+          </Link>
+        </div>
         <div className="grid lg:grid-cols-9 md:grid-cols-6 grid-cols-3 pb-4 gap-4 hide-scrollbar justify-start md:justify-center">
           {[
-            { name: "Panjabi", img: "https://picsum.photos/seed/cat1/100/100" },
-            { name: "Shirt", img: "https://picsum.photos/seed/cat2/100/100" },
-            { name: "T-shirt", img: "https://picsum.photos/seed/cat3/100/100" },
-            { name: "Polo", img: "https://picsum.photos/seed/cat4/100/100" },
-            { name: "Pant", img: "https://picsum.photos/seed/cat5/100/100" },
-            { name: "Perfume", img: "https://picsum.photos/seed/cat6/100/100" },
-            { name: "Gadget", img: "https://picsum.photos/seed/cat7/100/100" },
-            { name: "Sneaker", img: "https://picsum.photos/seed/cat8/100/100" },
-            { name: "Food", img: "https://picsum.photos/seed/cat9/100/100" },
+            {
+              name: "Panjabi",
+              // img: "https://picsum.photos/seed/cat1/1000/1000",
+              img: "/mini.jpg",
+            },
+            // { name: "Shirt", img: "https://picsum.photos/seed/cat2/1000/1000" },
+            { name: "Shirt", img: "/template.jpg" },
+            {
+              name: "T-shirt",
+              img: "https://picsum.photos/seed/cat3/1000/1000",
+            },
+            { name: "Polo", img: "https://picsum.photos/seed/cat4/1000/1000" },
+            { name: "Pant", img: "https://picsum.photos/seed/cat5/1000/1000" },
+            {
+              name: "Perfume",
+              img: "https://picsum.photos/seed/cat6/1000/1000",
+            },
+            {
+              name: "Gadget",
+              img: "https://picsum.photos/seed/cat7/1000/1000",
+            },
+            {
+              name: "Sneaker",
+              img: "https://picsum.photos/seed/cat8/1000/1000",
+            },
+            { name: "Food", img: "https://picsum.photos/seed/cat9/1000/1000" },
           ].map((cat, i) => (
             <Link
               key={i}
@@ -124,10 +152,11 @@ export default function Home() {
             >
               <div className="w-32 h-32 md:w-32 md:h-32 rounded-2xl overflow-hidden border-2 border-gray-100 relative">
                 <Image
+                  width={500}
+                  height={500}
                   src={cat.img}
                   alt={cat.name}
-                  fill
-                  className="object-cover"
+                  className="object-cover w-full h-full"
                 />
               </div>
               <span className="text-xs font-medium text-center">
@@ -139,25 +168,27 @@ export default function Home() {
       </section>
 
       {/* Showroom Banner */}
-      <section className="max-w-7xl mx-auto w-full px-4">
-        <div className="relative w-full aspect-[5/1] bg-gray-200 rounded-lg overflow-hidden">
+      {/* <section className="max-w-7xl mx-auto w-full px-4">
+        <div className="relative w-full lg:aspect-[4/1] aspect-[3/1] bg-gray-200 rounded-lg overflow-hidden">
           <Image
-            src="https://picsum.photos/seed/showroom/1200/240"
+            src="https://picsum.photos/seed/showroom/1400/300"
             alt="Showroom Direction"
-            fill
-            className="object-cover"
+            width={1000}
+            height={600}
+            className="object-cover w-full h-full"
           />
         </div>
-      </section>
+      </section> */}
 
       {/* Panjabi Section */}
       <section className="max-w-7xl mx-auto w-full px-4">
-        <div className="relative w-full aspect-[4/1] bg-gray-200 mb-6 rounded-lg overflow-hidden">
+        <div className="relative w-full lg:aspect-[4/1] aspect-[3/1] bg-gray-200 mb-6 rounded-lg overflow-hidden">
           <Image
             src="https://picsum.photos/seed/panjabibanner/1200/300"
             alt="Panjabi Collection"
-            fill
-            className="object-cover"
+            width={600}
+            height={600}
+            className="object-cover w-full h-full"
           />
         </div>
 
@@ -200,5 +231,3 @@ export default function Home() {
     </div>
   );
 }
-
-
