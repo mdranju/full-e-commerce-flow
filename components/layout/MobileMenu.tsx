@@ -116,7 +116,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t border-gray-100 bg-white space-y-3">
+        <div className="p-4 border-t border-gray-100 bg-white space-y-3 pb-[80px]">
           <Link 
             href="/track-order" 
             onClick={onClose}

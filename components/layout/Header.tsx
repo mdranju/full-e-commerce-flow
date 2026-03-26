@@ -9,9 +9,11 @@ import { setCartOpen } from "@/src/store/slices/uiSlice";
 import { MobileMenu } from "./MobileMenu";
 import { CartSidebar } from "./CartSidebar";
 import { SearchBar } from "./SearchBar";
+import { SearchModal } from "./SearchModal";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isBouncing, setIsBouncing] = useState(false);
   const dispatch = useDispatch();
 
@@ -36,12 +38,14 @@ export function Header() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             {/* Mobile Menu Button */}
-            <button
-              className="lg:hidden p-2 -ml-2 text-gray-600"
-              onClick={() => setIsMenuOpen(true)}
-            >
-              <Menu size={24} />
-            </button>
+            <div className="flex items-center lg:hidden gap-1">
+              <button
+                className="p-2 -ml-2 text-gray-600"
+                onClick={() => setIsMenuOpen(true)}
+              >
+                <Menu size={24} />
+              </button>
+            </div>
 
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 shrink-0">
@@ -77,19 +81,22 @@ export function Header() {
 
               <button
                 onClick={() => dispatch(setCartOpen(true))}
-                className={`relative p-2 hover:text-gray-600 ${isBouncing ? "animate-cart-bounce" : ""}`}
+                className={`hidden lg:flex relative p-2 hover:text-gray-600 ${isBouncing ? "animate-cart-bounce" : ""}`}
               >
                 <ShoppingBag size={24} />
                 <span className="absolute top-0 right-0 w-5 h-5 bg-pink-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">
                   {totalQuantity}
                 </span>
               </button>
-            </div>
-          </div>
 
-          {/* Search Bar - Mobile */}
-          <div className="mt-4 lg:hidden">
-            <SearchBar isMobile />
+              {/* Mobile Search Icon (Replaces Cart) */}
+              <button
+                className="lg:hidden p-2 text-gray-600"
+                onClick={() => setIsSearchModalOpen(true)}
+              >
+                <Search size={20} />
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -99,6 +106,12 @@ export function Header() {
         isOpen={isCartOpen}
         onClose={() => dispatch(setCartOpen(false))}
         cartItems={cartItems}
+      />
+
+      {/* Mobile Search Modal for Product Page */}
+      <SearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
       />
     </>
   );
