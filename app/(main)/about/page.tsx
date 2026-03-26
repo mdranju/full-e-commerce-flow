@@ -1,7 +1,12 @@
+import { BackButton } from "@/components/common/BackButton";
+
 export default function AboutPage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12 max-w-4xl">
-      <h1 className="text-3xl font-bold text-center mb-12">About Us</h1>
+    <div className="max-w-4xl mx-auto px-4 py-12">
+      <BackButton className="mb-" />
+      <h1 className="text-4xl font-black text-gray-900 mb-8">
+        About Believers
+      </h1>
 
       <div className="prose prose-lg max-w-none text-gray-700">
         <p className="mb-6">
