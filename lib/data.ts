@@ -169,3 +169,86 @@ export const products = [
     inStock: false,
   },
 ];
+
+export const mockOrders = [
+  {
+    id: "BS_NUT0_0116907",
+    date: "2026-01-28",
+    status: "Delivered",
+    total: 2450,
+    paymentMethod: "Cash on delivery",
+    shippingAddress: "Hazari Bari Jame Mosque, Bir Uttam AK Khandakar Road, Mohakhali, Dhaka - 1212",
+    items: [
+      {
+        id: "1",
+        name: "As-Shabab Panjabi - 13",
+        price: 1350,
+        quantity: 1,
+        size: "XL",
+        image: "/template-1.jpg"
+      },
+      {
+        id: "5",
+        name: "Premium Cotton T-shirt - Insafer",
+        price: 440,
+        quantity: 2,
+        size: "M",
+        image: "https://picsum.photos/seed/tshirt1/1000/1000"
+      }
+    ]
+  },
+  {
+    id: "BS_NUT0_0116908",
+    date: "2026-03-25",
+    status: "Shipped",
+    total: 1890,
+    paymentMethod: "Online Payment",
+    shippingAddress: "House 12, Road 5, Dhanmondi, Dhaka - 1209",
+    items: [
+      {
+        id: "9",
+        name: "Luxury Panjabi - 04",
+        price: 4450,
+        quantity: 1,
+        size: "L",
+        image: "https://picsum.photos/seed/lux1/1000/1000"
+      }
+    ]
+  },
+  {
+    id: "BS_NUT0_0116909",
+    date: "2026-03-26",
+    status: "Processing",
+    total: 1350,
+    paymentMethod: "Cash on delivery",
+    shippingAddress: "Plot 4, Sector 7, Uttara, Dhaka - 1230",
+    items: [
+      {
+        id: "2",
+        name: "As-Shabab Panjabi - 08",
+        price: 1350,
+        quantity: 1,
+        size: "XXL",
+        image: "https://picsum.photos/seed/panjabi2/1000/1000"
+      }
+    ]
+  },
+  {
+    id: "BS_NUT0_0116910",
+    date: "2026-03-27",
+    status: "Pending",
+    total: 880,
+    paymentMethod: "Cash on delivery",
+    shippingAddress: "Flat 3B, House 56, Gulshan 2, Dhaka - 1212",
+    items: [
+      {
+        id: "6",
+        name: "Premium Cotton T-shirt - Salahuddin",
+        price: 440,
+        quantity: 2,
+        size: "L",
+        image: "https://picsum.photos/seed/tshirt2/1000/1000"
+      }
+    ]
+  }
+];
