@@ -3,9 +3,9 @@ import { Sora } from "next/font/google";
 import "./globals.css";
 import { TopBar } from "@/components/layout/TopBar";
 import { Header } from "@/components/layout/Header";
-import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { DesktopCursor } from "@/components/desktop/DesktopCursor";
 import StoreProvider from "./StoreProvider";
 import { Toaster } from "sonner";
 
@@ -31,9 +31,10 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <StoreProvider>
+          {/* Desktop-only glowing cursor */}
+          <DesktopCursor />
           <TopBar />
           <Header />
-          {/* <Navigation /> */}
           <main className="flex-grow w-full pb-[65px] lg:pb-0">{children}</main>
           <Footer />
           <MobileBottomNav />
