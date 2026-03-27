@@ -72,12 +72,12 @@ export const products = [
   },
   {
     id: "5",
-    name: "Premium Cotton T-shirt - Insafer Bangl...",
+    name: "Premium Cotton T-shirt - Insafer Banglssssdsdsd...",
     slug: "premium-cotton-t-shirt-1",
     price: 440,
     originalPrice: 550,
     category: "t-shirt",
-    image: "https://picsum.photos/seed/tshirt1/1000/1000",
+    image: "https://picsum.photos/seed/tshirt1/3000/3000",
     badge: "20 %",
     inStock: true,
   },
@@ -177,7 +177,8 @@ export const mockOrders = [
     status: "Delivered",
     total: 2450,
     paymentMethod: "Cash on delivery",
-    shippingAddress: "Hazari Bari Jame Mosque, Bir Uttam AK Khandakar Road, Mohakhali, Dhaka - 1212",
+    shippingAddress:
+      "Hazari Bari Jame Mosque, Bir Uttam AK Khandakar Road, Mohakhali, Dhaka - 1212",
     items: [
       {
         id: "1",
@@ -185,7 +186,7 @@ export const mockOrders = [
         price: 1350,
         quantity: 1,
         size: "XL",
-        image: "/template-1.jpg"
+        image: "/template-1.jpg",
       },
       {
         id: "5",
@@ -193,9 +194,9 @@ export const mockOrders = [
         price: 440,
         quantity: 2,
         size: "M",
-        image: "https://picsum.photos/seed/tshirt1/1000/1000"
-      }
-    ]
+        image: "https://picsum.photos/seed/tshirt1/1000/1000",
+      },
+    ],
   },
   {
     id: "BS_NUT0_0116908",
@@ -211,9 +212,9 @@ export const mockOrders = [
         price: 4450,
         quantity: 1,
         size: "L",
-        image: "https://picsum.photos/seed/lux1/1000/1000"
-      }
-    ]
+        image: "https://picsum.photos/seed/lux1/1000/1000",
+      },
+    ],
   },
   {
     id: "BS_NUT0_0116909",
@@ -229,9 +230,9 @@ export const mockOrders = [
         price: 1350,
         quantity: 1,
         size: "XXL",
-        image: "https://picsum.photos/seed/panjabi2/1000/1000"
-      }
-    ]
+        image: "https://picsum.photos/seed/panjabi2/1000/1000",
+      },
+    ],
   },
   {
     id: "BS_NUT0_0116910",
@@ -247,8 +248,8 @@ export const mockOrders = [
         price: 440,
         quantity: 2,
         size: "L",
-        image: "https://picsum.photos/seed/tshirt2/1000/1000"
-      }
-    ]
-  }
+        image: "https://picsum.photos/seed/tshirt2/1000/1000",
+      },
+    ],
+  },
 ];
