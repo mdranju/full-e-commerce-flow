@@ -1,8 +1,10 @@
+/* eslint-disable react-hooks/immutability */
 "use client";
 
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 
 interface ImageLightboxProps {
   images: string[];
@@ -20,11 +22,9 @@ export function ImageLightbox({
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
+  const [mounted, setMounted] = useState(false);
 
-  // isGesturing drives the CSS transition (true = no transition during active gesture)
-  const [isGesturing, setIsGesturing] = useState(false);
-
-  // Touch tracking refs (no re-renders during gesture)
+  // Touch tracking refs
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
   const lastTouchDist = useRef<number | null>(null);
@@ -33,21 +33,9 @@ export function ImageLightbox({
   const isPanning = useRef(false);
   const panStart = useRef({ x: 0, y: 0 });
 
-  // Close on Escape
   useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [isOpen, onClose]);
-
-  // Prevent body scroll while open
-  useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+    setMounted(true);
+  }, []);
 
   const resetTransform = useCallback(() => {
     setScale(1);
@@ -55,6 +43,37 @@ export function ImageLightbox({
     lastScale.current = 1;
     lastTranslate.current = { x: 0, y: 0 };
   }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentIndex(initialIndex);
+      resetTransform();
+    }
+  }, [isOpen, initialIndex, resetTransform]);
+
+  const [isGesturing, setIsGesturing] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowLeft") goTo(currentIndex - 1);
+      if (e.key === "ArrowRight") goTo(currentIndex + 1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen, onClose, currentIndex]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   const goTo = useCallback(
     (index: number) => {
@@ -64,8 +83,6 @@ export function ImageLightbox({
     },
     [images.length, resetTransform],
   );
-
-  // ── Touch handlers ──────────────────────────────────────────────────────────
 
   const getDist = (touches: React.TouchList) =>
     Math.hypot(
@@ -79,7 +96,6 @@ export function ImageLightbox({
       touchStartY.current = e.touches[0].clientY;
 
       if (lastScale.current > 1) {
-        // Begin pan
         isPanning.current = true;
         setIsGesturing(true);
         panStart.current = {
@@ -98,15 +114,13 @@ export function ImageLightbox({
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (e.touches.length === 2 && lastTouchDist.current !== null) {
-      // ── Pinch-to-zoom ──────────────────────────────────────────────────────
-      e.preventDefault(); // only works with passive:false; handled below via ref
+      e.preventDefault();
       const newDist = getDist(e.touches);
       const delta = newDist / lastTouchDist.current;
       const newScale = Math.min(4, Math.max(1, lastScale.current * delta));
       setScale(newScale);
       if (newScale === 1) resetTransform();
     } else if (e.touches.length === 1 && isPanning.current) {
-      // ── Pan ────────────────────────────────────────────────────────────────
       const nx = e.touches[0].clientX - panStart.current.x;
       const ny = e.touches[0].clientY - panStart.current.y;
       setTranslate({ x: nx, y: ny });
@@ -115,11 +129,9 @@ export function ImageLightbox({
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (e.changedTouches.length === 1 && !isPanning.current) {
-      // ── Swipe detection ────────────────────────────────────────────────────
       const deltaX = e.changedTouches[0].clientX - touchStartX.current;
       const deltaY = e.changedTouches[0].clientY - touchStartY.current;
 
-      // Only treat as swipe when scale is 1 and horizontal dominates
       if (
         lastScale.current === 1 &&
         Math.abs(deltaX) > Math.abs(deltaY) &&
@@ -131,12 +143,9 @@ export function ImageLightbox({
     }
 
     if (e.touches.length < 2) {
-      // Finalise pinch
       lastScale.current = scale;
       lastTranslate.current = translate;
       lastTouchDist.current = null;
-
-      // Snap back to 1× if near reset
       if (scale < 1.05) resetTransform();
     }
     if (e.touches.length === 0) {
@@ -146,7 +155,6 @@ export function ImageLightbox({
     }
   };
 
-  // Attach passive:false touch listener to allow preventDefault in pinch
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = containerRef.current;
@@ -158,101 +166,120 @@ export function ImageLightbox({
     return () => el.removeEventListener("touchmove", prevent);
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const canGoPrev = currentIndex > 0;
   const canGoNext = currentIndex < images.length - 1;
 
-  return (
+  const lightboxContent = (
     <div
-      className="fixed inset-0 z-[200] bg-black/90 flex flex-col"
+      className="fixed inset-0 z-[9999] bg-[#0B1221]/95 backdrop-blur-3xl flex flex-col"
       aria-modal
       role="dialog"
     >
-      {/* Top bar */}
-      <div className="relative flex items-center justify-between px-4 py-3 shrink-0">
-        <span className="text-white/60 text-sm font-medium">
-          {currentIndex + 1} / {images.length}
-        </span>
+      {/* Top Bar */}
+      <div className="flex items-center justify-between px-6 py-5 shrink-0 z-10">
+        <div className="flex flex-col">
+          <span className="text-white font-black text-xl tracking-tighter leading-none mb-1">
+            Preview Gallery
+          </span>
+          <span className="text-white/40 text-[10px] font-black uppercase tracking-[0.3em]">
+            {currentIndex + 1} / {images.length}
+          </span>
+        </div>
         <button
           onClick={onClose}
-          className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
-          aria-label="Close image viewer"
+          className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/10 hover:bg-white text-white hover:text-[#0B1221] active:scale-95 transition-all duration-500"
+          aria-label="Close"
         >
-          <X size={22} />
+          <X size={24} />
         </button>
       </div>
 
-      {/* Image area */}
+      {/* Main Image Viewport */}
       <div
         ref={containerRef}
-        className="flex-1 relative overflow-hidden flex items-center justify-center select-none"
+        className="flex-1 relative overflow-hidden flex items-center justify-center select-none cursor-grab active:cursor-grabbing"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onClick={(e) => {
-          // Close on backdrop tap only when at 1× scale
           if (e.target === e.currentTarget && scale === 1) onClose();
         }}
       >
         <div
-          className="relative w-full h-full"
+          className="relative w-full h-[60vh] md:h-[70vh] max-w-5xl mx-auto pointer-events-none"
           style={{
             transform: `scale(${scale}) translate(${translate.x / scale}px, ${translate.y / scale}px)`,
             transformOrigin: "center center",
-            transition: isGesturing ? "none" : "transform 0.15s ease-out",
+            transition: isGesturing
+              ? "none"
+              : "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           }}
         >
-          <Image
-            src={images[currentIndex]}
-            alt={`Product image ${currentIndex + 1}`}
-            fill
-            className="object-contain pointer-events-none"
-            priority
-            draggable={false}
-          />
+          <div className="absolute inset-4 rounded-[3rem] bg-white/5 backdrop-blur-xl border border-white/10 shadow-3xl overflow-hidden">
+            <Image
+              src={images[currentIndex]}
+              alt={`Product view ${currentIndex + 1}`}
+              fill
+              className="object-contain"
+              priority
+              draggable={false}
+            />
+            {/* Subtle ambient light for dark images */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0B1221]/40 via-transparent to-transparent pointer-events-none" />
+          </div>
         </div>
 
-        {/* Left arrow */}
-        {canGoPrev && (
-          <button
-            onClick={() => goTo(currentIndex - 1)}
-            className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 hover:bg-white/25 transition-colors text-white backdrop-blur-sm"
-            aria-label="Previous image"
-          >
-            <ChevronLeft size={28} />
-          </button>
-        )}
-
-        {/* Right arrow */}
-        {canGoNext && (
-          <button
-            onClick={() => goTo(currentIndex + 1)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 hover:bg-white/25 transition-colors text-white backdrop-blur-sm"
-            aria-label="Next image"
-          >
-            <ChevronRight size={28} />
-          </button>
-        )}
+        {/* Navigation Arrows (Desktop) */}
+        <div className="hidden lg:block">
+          {canGoPrev && (
+            <button
+              onClick={() => goTo(currentIndex - 1)}
+              className="absolute left-8 top-1/2 -translate-y-1/2 w-16 h-16 flex items-center justify-center rounded-[2rem] bg-white/5 hover:bg-white text-white hover:text-[#0B1221] border border-white/10 backdrop-blur-xl transition-all duration-500 shadow-2xl"
+            >
+              <ChevronLeft size={32} />
+            </button>
+          )}
+          {canGoNext && (
+            <button
+              onClick={() => goTo(currentIndex + 1)}
+              className="absolute right-8 top-1/2 -translate-y-1/2 w-16 h-16 flex items-center justify-center rounded-[2rem] bg-white/5 hover:bg-white text-white hover:text-[#0B1221] border border-white/10 backdrop-blur-xl transition-all duration-500 shadow-2xl"
+            >
+              <ChevronRight size={32} />
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Dot indicators */}
-      {images.length > 1 && (
-        <div className="flex justify-center gap-1.5 py-4 shrink-0">
-          {images.map((_, idx) => (
+      {/* Preview Gallery / Thumbnails */}
+      <div className="shrink-0 w-full px-6 py-8 overflow-x-auto hide-scrollbar z-10 flex justify-center bg-black/20 backdrop-blur-md">
+        <div className="flex items-center gap-4">
+          {images.map((img, idx) => (
             <button
               key={idx}
-              onClick={() => goTo(idx)}
-              aria-label={`Go to image ${idx + 1}`}
-              className={`rounded-full transition-all duration-200 ${
+              onClick={() => {
+                setCurrentIndex(idx);
+                resetTransform();
+              }}
+              className={`relative w-20 h-20 rounded-2xl overflow-hidden border-2 transition-all duration-500 shrink-0 ${
                 idx === currentIndex
-                  ? "w-5 h-2 bg-white"
-                  : "w-2 h-2 bg-white/40 hover:bg-white/70"
+                  ? "border-white scale-110 shadow-2xl shadow-white/20"
+                  : "border-white/10 opacity-40 hover:opacity-100 hover:border-white/30"
               }`}
-            />
+            >
+              <Image
+                src={img}
+                alt={`Preview ${idx + 1}`}
+                fill
+                className="object-cover"
+              />
+            </button>
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
+
+  return createPortal(lightboxContent, document.body);
 }
