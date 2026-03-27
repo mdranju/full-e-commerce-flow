@@ -1,13 +1,13 @@
+import { DesktopCursor } from "@/components/desktop/DesktopCursor";
+import { Footer } from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { TopBar } from "@/components/layout/TopBar";
+import { PremiumToaster } from "@/components/ui/PremiumToast";
 import type { Metadata } from "next";
 import { Sora } from "next/font/google";
 import "./globals.css";
-import { TopBar } from "@/components/layout/TopBar";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
-import { DesktopCursor } from "@/components/desktop/DesktopCursor";
 import StoreProvider from "./StoreProvider";
-import { Toaster } from "sonner";
 
 const sora = Sora({
   subsets: ["latin"],
@@ -38,7 +38,7 @@ export default function RootLayout({
           <main className="flex-grow w-full pb-[65px] lg:pb-0">{children}</main>
           <Footer />
           <MobileBottomNav />
-          <Toaster position="top-right" richColors closeButton />
+          <PremiumToaster />
         </StoreProvider>
       </body>
     </html>

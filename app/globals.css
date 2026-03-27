@@ -14,6 +14,29 @@
   display: none !important;
 }
 
+/* ─── Premium Slider Animations & Pagination ───────────────── */
+.hero-swiper .swiper-slide img {
+  transform: scale(1);
+  transition: transform 7s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+}
+.hero-swiper .swiper-slide-active img {
+  transform: scale(1);
+}
+.hero-swiper .swiper-pagination-bullet {
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  opacity: 1 !important;
+  transition: all 0.5s ease;
+  width: 6px;
+  height: 6px;
+}
+.hero-swiper .swiper-pagination-bullet-active {
+  background-color: #fff !important;
+  width: 24px;
+  border-radius: 99px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
 /* ─── Cart bounce ──────────────────────────────────────────── */
 @keyframes cartBounce {
   0% {
@@ -41,7 +64,7 @@
 @media (min-width: 1024px) {
   /* ─── Custom Cursor ───────────────────────────────────────── */
   body {
-    cursor: none;
+    /* cursor: none; */
   }
 
   #cursor-ring {
@@ -77,10 +100,16 @@
 
   /* ─── Glassmorphism utilities ─────────────────────────────── */
   .glass-card {
-    background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(14px) saturate(160%);
-    -webkit-backdrop-filter: blur(14px) saturate(160%);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 20px 80px -20px rgba(59, 130, 246, 0.15);
   }
   .glass-nav {
     background: rgba(255, 255, 255, 0.85);
@@ -183,10 +212,29 @@
 
   /* ─── Hero display headline ───────────────────────────────── */
   .hero-display {
-    font-family: "Playfair Display", serif;
-    font-weight: 900;
+    font-family: inherit;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+  }
+
+  .premium-section-title {
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 800;
     letter-spacing: -0.03em;
-    line-height: 1.05;
+    color: #0b1221;
+    position: relative;
+    padding-bottom: 0.75rem;
+  }
+  .premium-section-title::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, transparent);
+    border-radius: 2px;
   }
 
   /* ─── CTA Button glow ────────────────────────────────────── */
@@ -234,4 +282,23 @@
   .btn-glow:hover {
     transform: none !important;
   }
+}
+
+/* ─── Custom Toast Animations ────────────────────────────── */
+@keyframes progressShrink {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+.animate-progress-shrink {
+  animation: progressShrink 4s linear forwards;
+}
+
+[data-sonner-toast] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
