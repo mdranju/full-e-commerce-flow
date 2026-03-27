@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { register, clearError } from "@/src/store/slices/authSlice";
 import { RootState, AppDispatch } from "@/src/store/store";
-import { toast } from "sonner";
+import { premiumToast as toast } from "@/components/ui/PremiumToast";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 
@@ -81,157 +81,167 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 relative overflow-hidden bg-white">
-      {/* Decorative Background Elements */}
-      <div className="absolute top-20 left-10 w-24 h-24 opacity-10 pointer-events-none">
-        <div className="w-full h-full border-2 border-primary rotate-45"></div>
-      </div>
-      <div className="absolute bottom-20 right-10 w-32 h-32 opacity-10 pointer-events-none">
-        <div className="w-full h-full rounded-full border-2 border-primary"></div>
-      </div>
+    <div className="min-h-screen flex items-center justify-center px-4 py-20 relative overflow-hidden bg-[#F8FAFC]">
+      {/* Soft Ambient Glow Elements */}
+      <div className="absolute top-0 right-0 w-[1000px] h-[700px] bg-blue-500/5 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-indigo-500/5 blur-[150px] rounded-full translate-y-1/2 -translate-x-1/4 pointer-events-none" />
 
-      <div className="w-full max-w-5xl flex flex-col md:flex-row items-center gap-12 relative z-10">
-        {/* Left Side - Illustration (hidden on small) */}
+      <div className="w-full max-w-6xl flex flex-col md:flex-row items-center gap-16 relative z-10">
+        {/* Left Side: Brand Visual */}
         <div className="hidden md:block w-1/2">
-          <div className="relative w-full aspect-square max-w-md mx-auto">
-            <Image
-              src="https://img.freepik.com/free-vector/sign-up-concept-illustration_114360-7885.jpg"
-              alt="Signup Illustration"
-              fill
-              className="object-contain"
-            />
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 rounded-[3rem] blur-xl opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+            <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-black/5 shadow-2xl">
+              <Image
+                src="https://picsum.photos/seed/signuplight/800/1000"
+                alt="Believers Membership"
+                fill
+                className="object-cover transition-transform duration-1000 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-white/40 via-transparent to-transparent" />
+              <div className="absolute bottom-10 left-10 p-8">
+                <p className="text-blue-600 text-[10px] font-black tracking-[0.4em] uppercase mb-4">
+                  Join Us
+                </p>
+                <h2 className="hero-display text-[#0B1221] text-5xl mb-2">
+                  Become a <br /> Believer.
+                </h2>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Right Side - Form */}
-        <div className="w-full md:w-1/2 max-w-md">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Sign Up.</h1>
-            <p className="text-gray-600">
-              Already have an account?{" "}
-              <Link href="/login" className="text-blue-500 hover:underline font-medium">
-                Sign In
-              </Link>
-            </p>
+        {/* Right Side: Clean Light Form */}
+        <div className="w-full md:w-1/2 max-w-lg">
+          <div className="bg-white p-10 md:p-12 rounded-[2.5rem] border border-black/5 shadow-[0_30px_100px_-20px_rgba(0,0,0,0.06)] backdrop-blur-3xl">
+            <div className="text-center mb-10">
+              <p className="text-blue-600 text-[10px] font-black tracking-[0.3em] uppercase mb-4">
+                Sign Up
+              </p>
+              <h1 className="hero-display text-[#0B1221] text-4xl mb-3 tracking-tighter">
+                Create Account.
+              </h1>
+              <p className="text-[#0B1221]/40 text-sm font-medium">
+                Already part of the community?{" "}
+                <Link href="/login" className="text-blue-600 hover:text-blue-700 font-bold underline-offset-4 hover:underline">
+                  Sign In
+                </Link>
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="group space-y-1.5 sm:col-span-2">
+                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest ml-4 group-focus-within:text-blue-600 transition-colors">
+                  Full Name
+                </label>
+                <div className="flex items-center bg-gray-50 border border-black/5 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:bg-white transition-all duration-300">
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="John Doe"
+                    className="w-full bg-transparent outline-none text-[#0B1221] text-sm placeholder:text-[#0B1221]/20 font-medium"
+                    value={formData.name}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="group space-y-1.5">
+                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest ml-4 group-focus-within:text-blue-600 transition-colors">
+                  Mobile Number
+                </label>
+                <div className="flex items-center bg-gray-50 border border-black/5 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:bg-white transition-all duration-300">
+                  <input
+                    type="text"
+                    name="phone"
+                    placeholder="017XXXXXXXX"
+                    className="w-full bg-transparent outline-none text-[#0B1221] text-sm placeholder:text-[#0B1221]/20 font-medium"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="group space-y-1.5">
+                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest ml-4 group-focus-within:text-blue-600 transition-colors">
+                  Email Address
+                </label>
+                <div className="flex items-center bg-gray-50 border border-black/5 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:bg-white transition-all duration-300">
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="name@example.com"
+                    className="w-full bg-transparent outline-none text-[#0B1221] text-sm placeholder:text-[#0B1221]/20 font-medium"
+                    value={formData.email}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="group space-y-1.5">
+                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest ml-4 group-focus-within:text-blue-600 transition-colors">
+                  Password
+                </label>
+                <div className="flex items-center bg-gray-50 border border-black/5 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:bg-white transition-all duration-300">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="********"
+                    className="w-full bg-transparent outline-none text-[#0B1221] text-sm placeholder:text-[#0B1221]/20 font-medium"
+                    value={formData.password}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-black/10 hover:text-[#0B1221] transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="group space-y-1.5">
+                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest ml-4 group-focus-within:text-blue-600 transition-colors">
+                  Confirm Password
+                </label>
+                <div className="flex items-center bg-gray-50 border border-black/5 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:bg-white transition-all duration-300">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    placeholder="********"
+                    className="w-full bg-transparent outline-none text-[#0B1221] text-sm placeholder:text-[#0B1221]/20 font-medium"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="text-black/10 hover:text-[#0B1221] transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="sm:col-span-2 w-full bg-[#0B1221] text-white h-16 rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-blue-600 transition-all flex items-center justify-center gap-3 shadow-2xl shadow-black/10 active:scale-[0.98] mt-4"
+              >
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : (
+                  "Create Account"
+                )}
+              </button>
+            </form>
           </div>
-
-          <div className="relative mb-8 text-center">
-            <span className="bg-white px-4 text-sm text-gray-500 relative z-10">or Sign up with Email</span>
-            <div className="absolute top-1/2 left-0 w-full h-px bg-gray-200 -z-0"></div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="relative">
-              <label className="absolute -top-2.5 left-3 bg-white px-1 text-xs text-gray-500 font-medium">
-                Your Full Name
-              </label>
-              <div className="flex items-center border border-gray-200 rounded px-3 py-3 focus-within:border-black transition-colors">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="John Doe"
-                  className="w-full outline-none text-gray-900 text-sm"
-                  value={formData.name}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                />
-              </div>
-            </div>
-
-            <div className="relative">
-              <label className="absolute -top-2.5 left-3 bg-white px-1 text-xs text-gray-500 font-medium">
-                Mobile Number
-              </label>
-              <div className="flex items-center border border-gray-200 rounded px-3 py-3 focus-within:border-black transition-colors">
-                <input
-                  type="text"
-                  name="phone"
-                  placeholder="Your 11 digit mobile number"
-                  className="w-full outline-none text-gray-900 text-sm"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                />
-              </div>
-            </div>
-
-            <div className="relative">
-              <label className="absolute -top-2.5 left-3 bg-white px-1 text-xs text-gray-500 font-medium">
-                Your Email
-              </label>
-              <div className="flex items-center border border-gray-200 rounded px-3 py-3 focus-within:border-black transition-colors">
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="name@example.com"
-                  className="w-full outline-none text-gray-900 text-sm"
-                  value={formData.email}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                />
-              </div>
-            </div>
-
-            <div className="relative">
-              <label className="absolute -top-2.5 left-3 bg-white px-1 text-xs text-gray-500 font-medium">
-                Password
-              </label>
-              <div className="flex items-center border border-gray-200 rounded px-3 py-3 focus-within:border-black transition-colors">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="********"
-                  className="w-full outline-none text-gray-900 text-sm"
-                  value={formData.password}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            <div className="relative">
-              <label className="absolute -top-2.5 left-3 bg-white px-1 text-xs text-gray-500 font-medium">
-                Confirm Password
-              </label>
-              <div className="flex items-center border border-gray-200 rounded px-3 py-3 focus-within:border-black transition-colors">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  placeholder="********"
-                  className="w-full outline-none text-gray-900 text-sm"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-[#0A1128] text-white py-3.5 rounded font-bold hover:bg-black transition-all flex items-center justify-center gap-2 group mt-4"
-            >
-              {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              ) : (
-                "Sign Up"
-              )}
-            </button>
-          </form>
         </div>
       </div>
     </div>
