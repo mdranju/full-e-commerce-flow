@@ -2,24 +2,32 @@
 
 import { BackButton } from "@/components/common/BackButton";
 import { useState } from "react";
-import { Users, TrendingUp, Gift, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Users, TrendingUp, Gift, CheckCircle, ChevronDown, Rocket } from "lucide-react";
+
+interface FormState {
+  name: string;
+  email: string;
+  phone: string;
+  platform: string;
+  followers: string;
+}
 
 const BENEFITS = [
-  { icon: TrendingUp, title: "Earn Commission", desc: "Earn up to 10% commission on every sale you refer through your unique affiliate link." },
-  { icon: Users, title: "Grow Together", desc: "Join a community of passionate affiliates and grow your income alongside the Believers brand." },
-  { icon: Gift, title: "Exclusive Rewards", desc: "Get access to exclusive deals, early product launches, and special incentives for top performers." },
+  { icon: TrendingUp, title: "Earn Commission", desc: "Earn up to 10% commission on every sale you refer through your unique link." },
+  { icon: Users, title: "Grow Together", desc: "Join an elite community of affiliates and grow your income with our brand." },
+  { icon: Gift, title: "Exclusive Rewards", desc: "Get access to VIP deals, pre-launch products, and top-performer bonuses." },
 ];
 
 const FAQS = [
-  { q: "How do I get my affiliate link?", a: "After submitting your application, your unique affiliate link will be emailed to you within 2–3 business days." },
-  { q: "When do I get paid?", a: "Commissions are paid out monthly via bKash or bank transfer, with a minimum threshold of 500৳." },
-  { q: "Who can become an affiliate?", a: "Anyone! Whether you're a social media influencer, blogger, or just someone with a network, you can join." },
+  { q: "How do I get my affiliate link?", a: "After application approval, your unique affiliate dashboard link will be emailed to you within 2–3 business days." },
+  { q: "When do I get paid?", a: "Commissions are processed monthly via bKash or Bank Transfer with a low minimum payout threshold of 500৳." },
+  { q: "Who can become an affiliate?", a: "Whether you're a content creator, blogger, or a loyal customer with a strong network, anyone can join and earn." },
 ];
 
 export default function AffiliatePage() {
   const [submitted, setSubmitted] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", platform: "", followers: "" });
+  const [form, setForm] = useState<FormState>({ name: "", email: "", phone: "", platform: "", followers: "" });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,103 +35,125 @@ export default function AffiliatePage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <BackButton className="mb-6" />
-
-      {/* Hero */}
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-bold mb-4">
-          <Users size={16} />
-          Affiliate Program
+    <div className="min-h-screen bg-gray-50/50">
+      <div className="relative h-[45vh] bg-[#0B1221] flex flex-col items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-tr from-indigo-900/40 to-[#0B1221] opacity-80" />
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5" />
+        
+        <div className="absolute top-8 left-8 z-20">
+          <BackButton className="bg-white/10 text-white backdrop-blur-md border-white/10 hover:bg-white/20" />
         </div>
-        <h1 className="text-4xl font-black text-gray-900 mb-4">Join as an Affiliate</h1>
-        <p className="text-lg text-gray-600 max-w-xl mx-auto leading-relaxed">
-          Partner with Believers and earn while sharing products you love. It&apos;s free to join and easy to start.
-        </p>
-      </div>
 
-      {/* Benefits */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-14">
-        {BENEFITS.map(({ icon: Icon, title, desc }) => (
-          <div key={title} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-blue-600">
-              <Icon size={22} />
-            </div>
-            <h3 className="font-black text-gray-900 mb-2">{title}</h3>
-            <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
+        <div className="relative z-10 text-center px-6 mt-12">
+          <div className="inline-flex items-center gap-2 bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 px-5 py-2 rounded-full text-[10px] font-black tracking-[0.3em] uppercase mb-6 animate-in slide-in-from-top-4 duration-700 backdrop-blur-md">
+            <Rocket size={14} /> Partner Program
           </div>
-        ))}
+          <h1 className="hero-display text-4xl md:text-6xl lg:text-7xl text-white uppercase tracking-tighter animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+            Join & Earn.
+          </h1>
+        </div>
       </div>
 
-      {/* Application Form */}
-      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 md:p-10 mb-12">
-        {submitted ? (
-          <div className="text-center py-8">
-            <CheckCircle size={56} className="text-green-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-black text-gray-900 mb-2">Application Submitted!</h2>
-            <p className="text-gray-500">We&apos;ll review your application and get back to you within 2–3 business days.</p>
-          </div>
-        ) : (
-          <>
-            <h2 className="text-2xl font-black text-gray-900 mb-6">Apply Now</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1.5">Full Name *</label>
-                  <input required value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                    placeholder="Your name" className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1.5">Email *</label>
-                  <input required type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                    placeholder="your@email.com" className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-24 -mt-16 sm:-mt-24 relative z-20">
+        
+        {/* Benefits Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+          {BENEFITS.map(({ icon: Icon, title, desc }) => (
+            <div key={title} className="bg-white rounded-[2rem] p-8 shadow-xl shadow-black/[0.02] border border-black/5 group hover:-translate-y-2 transition-transform duration-500">
+              <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mb-6 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500">
+                <Icon size={24} strokeWidth={1.5} />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1.5">Phone *</label>
-                  <input required type="tel" value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-                    placeholder="01XXXXXXXXX" className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1.5">Platform (Facebook, YouTube, etc.)</label>
-                  <input value={form.platform} onChange={(e) => setForm((f) => ({ ...f, platform: e.target.value }))}
-                    placeholder="Facebook / Instagram" className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-500 mb-1.5">Approximate Followers / Reach</label>
-                <input value={form.followers} onChange={(e) => setForm((f) => ({ ...f, followers: e.target.value }))}
-                  placeholder="e.g. 5,000" className="w-full px-4 py-3 bg-gray-50 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <button type="submit" className="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-sm hover:bg-blue-700 transition-colors mt-2">
-                Submit Application
-              </button>
-            </form>
-          </>
-        )}
-      </div>
-
-      {/* FAQs */}
-      <div>
-        <h2 className="text-2xl font-black text-gray-900 mb-6">Frequently Asked Questions</h2>
-        <div className="space-y-3">
-          {FAQS.map((faq, i) => (
-            <div key={i} className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
-              <button
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                className="w-full flex items-center justify-between px-6 py-4 text-sm font-bold text-gray-900 text-left"
-              >
-                {faq.q}
-                {openFaq === i ? <ChevronUp size={16} className="text-gray-400 flex-shrink-0" /> : <ChevronDown size={16} className="text-gray-400 flex-shrink-0" />}
-              </button>
-              {openFaq === i && (
-                <div className="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-3">
-                  {faq.a}
-                </div>
-              )}
+              <h3 className="text-base font-black text-[#0B1221] uppercase tracking-tight mb-3">{title}</h3>
+              <p className="text-sm text-gray-500 leading-relaxed font-medium">{desc}</p>
             </div>
           ))}
+        </div>
+
+        <div className="bg-white rounded-[2.5rem] sm:rounded-[4rem] border border-black/5 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] p-8 sm:p-14 lg:p-20 mb-12 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-500">
+          {submitted ? (
+            <div className="text-center py-16 animate-in zoom-in duration-500">
+              <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8 border border-green-100">
+                <CheckCircle size={48} className="text-green-500" strokeWidth={1.5} />
+              </div>
+              <h2 className="hero-display text-3xl sm:text-4xl text-[#0B1221] mb-4 uppercase tracking-tighter">Application Received</h2>
+              <p className="text-gray-500 font-medium max-w-sm mx-auto leading-relaxed">
+                Welcome to the pipeline! We will review your profile and email you your unique dashboard link within 2–3 business days.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="text-center mb-12">
+                <h2 className="hero-display text-3xl sm:text-4xl text-[#0B1221] tracking-tighter">Apply Now</h2>
+                <p className="text-sm text-gray-500 mt-2 font-medium">Takes less than 2 minutes to complete.</p>
+              </div>
+              <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl mx-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest pl-4">Full Name *</label>
+                    <input required value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                      placeholder="e.g. John Doe" className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[1.25rem] text-sm font-medium outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest pl-4">Email Address *</label>
+                    <input required type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                      placeholder="your@email.com" className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[1.25rem] text-sm font-medium outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest pl-4">Phone *</label>
+                    <input required type="tel" value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                      placeholder="01XXXXXXXXX" className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[1.25rem] text-sm font-medium outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest pl-4">Primary Platform</label>
+                    <input value={form.platform} onChange={(e) => setForm((f) => ({ ...f, platform: e.target.value }))}
+                      placeholder="Facebook / YouTube / Instagram" className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[1.25rem] text-sm font-medium outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest pl-4">Audience Size</label>
+                  <input value={form.followers} onChange={(e) => setForm((f) => ({ ...f, followers: e.target.value }))}
+                    placeholder="Approximate followers or reach" className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[1.25rem] text-sm font-medium outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all" />
+                </div>
+                <div className="pt-6">
+                  <button type="submit" className="w-full md:w-auto md:px-14 bg-indigo-600 text-white py-4 sm:py-5 rounded-[1.25rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/20 hover:-translate-y-1 transition-all mx-auto block max-w-sm">
+                    Submit Application
+                  </button>
+                </div>
+              </form>
+            </>
+          )}
+        </div>
+
+        {/* FAQs inside bottom of affiliate page */}
+        <div className="bg-white rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-14 border border-black/5">
+          <h2 className="text-xl sm:text-2xl font-black text-[#0B1221] uppercase tracking-tighter mb-8 flex items-center gap-4">
+            <span className="w-6 h-1 bg-indigo-500 rounded-full" />
+            Affiliate FAQ
+          </h2>
+          <div className="grid gap-4">
+            {FAQS.map((faq, i) => (
+              <div key={i} className="group bg-gray-50/50 border border-black/5 rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-md hover:bg-white">
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full flex items-center justify-between p-6 text-sm sm:text-base font-bold text-[#0B1221] text-left outline-none"
+                >
+                  <span className="group-hover:text-indigo-600 transition-colors">{faq.q}</span>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all flex-shrink-0 ${openFaq === i ? "bg-indigo-500 text-white" : "bg-white border border-black/5 text-gray-400 group-hover:border-indigo-200"}`}>
+                    <ChevronDown size={16} className={`transition-transform duration-300 ${openFaq === i ? "rotate-180" : ""}`} />
+                  </div>
+                </button>
+                <div 
+                  className={`overflow-hidden transition-all duration-500 ease-in-out ${openFaq === i ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}
+                >
+                  <div className="px-6 pb-6 text-sm font-medium text-gray-500 leading-relaxed">
+                    {faq.a}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

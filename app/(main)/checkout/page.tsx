@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "sonner";
+import { premiumToast as toast } from "@/components/ui/PremiumToast";
 import {
   MapPin,
   Home,
@@ -31,6 +31,7 @@ export default function CheckoutPage() {
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [showSavedAddresses, setShowSavedAddresses] = useState(true);
   const [useNewAddress, setUseNewAddress] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Controlled form state
   const selectedAddress = selectedAddressId
@@ -66,7 +67,7 @@ export default function CheckoutPage() {
     }));
   };
 
-  const handlePlaceOrder = (e: React.FormEvent) => {
+  const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (cartItems.length === 0) {
       toast.error("Cart is Empty", {
@@ -74,6 +75,8 @@ export default function CheckoutPage() {
       });
       return;
     }
+
+    setIsProcessing(true);
 
     const orderId = `ORD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
     const orderData = {
@@ -87,313 +90,411 @@ export default function CheckoutPage() {
       date: new Date().toISOString(),
     };
 
+    // Simulate premium processing delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     sessionStorage.setItem("lastOrder", JSON.stringify(orderData));
     dispatch(clearCart());
+    
     toast.success("Order Confirmed! 🎉", {
       description: "Your order has been placed successfully. We'll notify you soon.",
     });
+    
     router.push("/thank-you");
   };
 
+  // State: Processing Order (Modern Summary UI)
+  if (isProcessing) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 lg:p-12 relative overflow-hidden">
+        {/* Soft Ambient Glows */}
+        <div className="absolute top-0 right-0 w-[800px] h-[600px] bg-blue-500/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/4 pointer-events-none" />
+
+        <div className="w-full max-w-lg relative z-10 space-y-8 animate-in fade-in zoom-in-95 duration-700">
+           <div className="bg-white p-10 lg:p-12 rounded-[2.5rem] border border-black/5 shadow-[0_30px_100px_-20px_rgba(0,0,0,0.06)] backdrop-blur-3xl text-center">
+              <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-8 relative">
+                <div className="absolute inset-0 rounded-full border-2 border-blue-600/10 border-t-blue-600 animate-spin" />
+                <CheckCircle2 size={40} className="text-blue-600/20" strokeWidth={1.5} />
+              </div>
+              
+              <p className="text-blue-600 text-[10px] font-black tracking-[0.4em] uppercase mb-4">
+                Secure Checkout
+              </p>
+              <h2 className="hero-display text-4xl lg:text-5xl tracking-tighter text-[#0B1221] mb-6">
+                Processing Order.
+              </h2>
+              <p className="text-[#0B1221]/40 text-sm font-medium leading-relaxed max-w-[280px] mx-auto mb-10">
+                Hang tight! We are finalizing your secure payment and updating your inventory.
+              </p>
+
+              <div className="pt-8 border-t border-black/5 flex flex-col gap-4">
+                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-[#0B1221]/40">
+                    <span>Order Subtotal</span>
+                    <span className="text-[#0B1221]">৳{totalPrice}</span>
+                 </div>
+                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-[#0B1221]/40">
+                    <span>Shipping Charges</span>
+                    <span className="text-[#0B1221]">৳{shippingCost}</span>
+                 </div>
+                 <div className="flex justify-between items-center text-sm font-black text-[#0B1221] pt-2">
+                    <span className="uppercase tracking-[0.2em] text-[10px]">Total Balance</span>
+                    <span className="text-xl">৳{totalPrice + shippingCost}</span>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // State: Empty Checkout (Premium UI)
   if (cartItems.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-16 text-center h-[50vh] flex flex-col justify-center items-center">
-        <h2 className="text-2xl font-bold mb-4 text-gray-900">Your checkout is empty</h2>
-        <p className="text-gray-500 mb-8 max-w-sm">
-          It looks like you haven&apos;t added any items to your cart yet.
-        </p>
-        <Link
-          href="/products"
-          className="bg-[#0B1221] text-white px-8 py-3 rounded-md font-medium hover:bg-gray-800 transition-colors"
-        >
-          Return to Shop
-        </Link>
+      <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+        {/* Soft Ambient Glows */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/4" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-500/5 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/4" />
+
+        <div className="glass-card p-12 lg:p-16 rounded-[3rem] border border-black/5 bg-white shadow-2xl shadow-black/5 max-w-lg relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
+           <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-10 border border-black/5">
+              <CheckCircle2 size={32} className="text-[#0B1221]/10" strokeWidth={1.5} />
+           </div>
+           
+           <h2 className="hero-display text-4xl tracking-tighter text-[#0B1221] mb-4">
+               Checkout is Empty.
+           </h2>
+           <p className="text-[#0B1221]/40 text-sm font-medium leading-relaxed mb-12 max-w-[280px] mx-auto">
+             It looks like you haven&apos;t added any luxury items to your cart yet. Let&apos;s change that.
+           </p>
+           
+           <Link
+             href="/products"
+             className="w-full inline-flex items-center justify-center bg-[#0B1221] text-white h-16 rounded-2xl font-black text-[10px] uppercase tracking-[0.4em] hover:bg-blue-600 transition-all shadow-xl active:scale-[0.98]"
+           >
+             Continue Shopping
+           </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <form onSubmit={handlePlaceOrder} className="flex flex-col lg:flex-row gap-8">
-        {/* Billing Details */}
-        <div className="w-full lg:w-2/3">
-          <h2 className="text-xl font-bold mb-6">Billing details</h2>
+    <div className="min-h-screen bg-[#f8fafc]/50 py-12 lg:py-20">
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+        <form onSubmit={handlePlaceOrder} className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start">
+          
+          {/* Section 01: Shipping details */}
+          <div className="w-full lg:w-3/5 space-y-12">
+            <div>
+              <p className="text-blue-600 text-[10px] font-black tracking-[0.4em] uppercase mb-4">
+                Section 01
+              </p>
+              <h2 className="hero-display text-4xl lg:text-5xl tracking-tighter text-[#0B1221]">
+                Shipping Details.
+              </h2>
+            </div>
 
-          {/* ── Saved Address Selector ── */}
-          {addresses.length > 0 && (
-            <div className="mb-8 bg-blue-50/60 border border-blue-100 rounded-2xl overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setShowSavedAddresses((v) => !v)}
-                className="w-full flex items-center justify-between px-5 py-4 text-sm font-bold text-blue-700"
-              >
-                <span className="flex items-center gap-2">
-                  <MapPin size={16} />
-                  Use a Saved Address
-                </span>
-                {showSavedAddresses ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-              </button>
+            {/* ── Saved Address Manager ── */}
+            {addresses.length > 0 && (
+              <div className="glass-card rounded-[2.5rem] border border-black/5 bg-white/40 backdrop-blur-3xl overflow-hidden p-2 shadow-2xl shadow-black/5">
+                <button
+                  type="button"
+                  onClick={() => setShowSavedAddresses((v) => !v)}
+                  className="w-full flex items-center justify-between px-8 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/40 hover:text-[#0B1221] transition-colors"
+                >
+                  <span className="flex items-center gap-3">
+                    <MapPin size={16} strokeWidth={1.5} />
+                    Saved Addresses
+                  </span>
+                  {showSavedAddresses ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                </button>
 
-              {showSavedAddresses && (
-                <div className="px-4 pb-4 space-y-3">
-                  {addresses.map((address) => {
-                    const isSelected =
-                      !useNewAddress &&
-                      (selectedAddressId === address.id ||
-                        (!selectedAddressId && address.isDefault));
-                    return (
-                      <button
-                        key={address.id}
-                        type="button"
-                        onClick={() => applyAddress(address)}
-                        className={`w-full text-left flex items-start gap-3 p-4 rounded-xl border-2 transition-all ${
-                          isSelected
-                            ? "border-blue-500 bg-white shadow-sm"
-                            : "border-transparent bg-white hover:border-blue-200"
-                        }`}
-                      >
-                        <div
-                          className={`p-1.5 rounded-lg flex-shrink-0 mt-0.5 ${isSelected ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-500"}`}
+                {showSavedAddresses && (
+                  <div className="px-4 pb-6 space-y-3 animate-in fade-in slide-in-from-top-4 duration-500">
+                    {addresses.map((address) => {
+                      const isSelected =
+                        !useNewAddress &&
+                        (selectedAddressId === address.id ||
+                          (!selectedAddressId && address.isDefault));
+                      return (
+                        <button
+                          key={address.id}
+                          type="button"
+                          onClick={() => applyAddress(address)}
+                          className={`w-full text-left flex items-start gap-4 p-5 rounded-[1.8rem] border-2 transition-all duration-500 ${
+                            isSelected
+                              ? "border-blue-600 bg-white shadow-xl shadow-blue-500/5 ring-8 ring-blue-500/5"
+                              : "border-transparent bg-white/50 hover:bg-white hover:border-black/5"
+                          }`}
                         >
-                          {address.label === "Home" ? (
-                            <Home size={14} />
-                          ) : address.label === "Office" ? (
-                            <Briefcase size={14} />
-                          ) : (
-                            <MapPin size={14} />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-sm font-black text-gray-900">
-                              {address.label}
-                            </span>
-                            {address.isDefault && (
-                              <span className="text-[10px] font-bold bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full uppercase tracking-widest">
-                                Default
-                              </span>
+                          <div
+                            className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${isSelected ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "bg-white border border-black/5 text-[#0B1221]/40"}`}
+                          >
+                            {address.label === "Home" ? (
+                              <Home size={18} strokeWidth={1.5} />
+                            ) : address.label === "Office" ? (
+                              <Briefcase size={18} strokeWidth={1.5} />
+                            ) : (
+                              <MapPin size={18} strokeWidth={1.5} />
                             )}
                           </div>
-                          <p className="text-xs text-gray-600">
-                            {address.firstName} {address.lastName}
-                          </p>
-                          <p className="text-xs text-gray-500 truncate">
-                            {address.street}, {address.city}, {address.district}
-                          </p>
-                          <p className="text-xs text-gray-400">{address.phone}</p>
+                          <div className="flex-1 min-w-0 pt-1">
+                            <div className="flex items-center gap-3 mb-1.5">
+                              <span className="text-sm font-black text-[#0B1221] tracking-tight">
+                                {address.label}
+                              </span>
+                              {address.isDefault && (
+                                <span className="text-[9px] font-black bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full uppercase tracking-widest border border-blue-100">
+                                  Default
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs font-bold text-[#0B1221]/60 truncate">
+                              {address.street}, {address.city}
+                            </p>
+                          </div>
+                          {isSelected && (
+                            <CheckCircle2 size={24} className="text-blue-600 shrink-0 mt-2" strokeWidth={1.5} />
+                          )}
+                        </button>
+                      );
+                    })}
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUseNewAddress(true);
+                        setSelectedAddressId(null);
+                        setForm((f) => ({
+                          ...f,
+                          firstName: "",
+                          lastName: "",
+                          street: "",
+                          apartment: "",
+                          city: "",
+                          district: "Dhaka",
+                          postalCode: "",
+                          phone: "",
+                        }));
+                      }}
+                      className={`w-full flex items-center justify-center gap-3 p-5 rounded-[1.8rem] border-2 text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-500 ${
+                        useNewAddress
+                          ? "border-blue-600 bg-white text-blue-600 shadow-xl shadow-blue-500/5 ring-8 ring-blue-500/5"
+                          : "border-dashed border-black/10 text-[#0B1221]/20 hover:border-blue-500/30 hover:text-blue-600"
+                      }`}
+                    >
+                      <Plus size={16} strokeWidth={2} />
+                      Add New Address
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── Billing Form ── */}
+            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="group space-y-2.5">
+                  <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">First Name *</label>
+                  <input required value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
+                    placeholder="Enter First Name" type="text"
+                    className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl focus:shadow-black/5"
+                  />
+                </div>
+                <div className="group space-y-2.5">
+                  <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">Last Name *</label>
+                  <input required value={form.lastName} onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
+                    placeholder="Enter Last Name" type="text"
+                    className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl focus:shadow-black/5"
+                  />
+                </div>
+              </div>
+
+              <div className="group space-y-2.5">
+                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">Country / Region *</label>
+                <div className="relative">
+                  <select className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl appearance-none">
+                    <option>Bangladesh</option>
+                  </select>
+                  <ChevronDown size={18} className="absolute right-6 top-1/2 -translate-y-1/2 text-[#0B1221]/20 pointer-events-none" />
+                </div>
+              </div>
+
+              <div className="group space-y-2.5">
+                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">Street Address *</label>
+                <div className="space-y-4">
+                  <input required value={form.street} onChange={(e) => setForm((f) => ({ ...f, street: e.target.value }))}
+                    type="text" placeholder="House number and street name"
+                    className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"
+                  />
+                  <input value={form.apartment} onChange={(e) => setForm((f) => ({ ...f, apartment: e.target.value }))}
+                    type="text" placeholder="Apartment, suite, unit, etc. (optional)"
+                    className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="group space-y-2.5">
+                  <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">Town / City *</label>
+                  <input required value={form.city} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
+                    placeholder="Enter City" type="text"
+                    className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"
+                  />
+                </div>
+                <div className="group space-y-2.5">
+                  <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">District *</label>
+                  <div className="relative">
+                    <select required value={form.district} onChange={(e) => setForm((f) => ({ ...f, district: e.target.value }))}
+                      className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl appearance-none"
+                    >
+                      <option value="">Select a district...</option>
+                      {["Dhaka","Chittagong","Sylhet","Rajshahi","Khulna","Barishal","Mymensingh","Rangpur","Comilla","Gazipur","Narayanganj"].map((d) => (
+                        <option key={d}>{d}</option>
+                      ))}
+                    </select>
+                    <ChevronDown size={18} className="absolute right-6 top-1/2 -translate-y-1/2 text-[#0B1221]/20 pointer-events-none" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="group space-y-2.5">
+                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">Contact Information *</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <input required value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                    placeholder="Phone Number" type="tel"
+                    className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"
+                  />
+                  <input required value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                    placeholder="Email Address" type="email"
+                    className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"
+                  />
+                </div>
+              </div>
+
+              <div className="group space-y-2.5 pt-8">
+                <p className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 mb-4">Section 02 / Additional Information</p>
+                <div className="space-y-4">
+                  <label className="text-sm font-bold text-[#0B1221] tracking-tight ml-4">Order Notes</label>
+                  <textarea
+                    rows={4}
+                    value={form.notes}
+                    onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+                    placeholder="Indicate any specific instructions for the delivery team."
+                    className="w-full bg-white border border-black/5 rounded-[2rem] px-8 py-6 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Review Column: Order Summary */}
+          <div className="w-full lg:w-2/5">
+            <div className="glass-card p-10 lg:p-12 rounded-[3.5rem] border border-black/5 bg-white/70 backdrop-blur-3xl shadow-2xl shadow-black/5 lg:sticky lg:top-32">
+              <div className="mb-10 text-center lg:text-left">
+                <p className="text-blue-600 text-[10px] font-black tracking-[0.4em] uppercase mb-4">
+                  Section 02
+                </p>
+                <h2 className="hero-display text-4xl tracking-tighter text-[#0B1221]">
+                  Order Summary.
+                </h2>
+              </div>
+
+              <div className="space-y-6 mb-12">
+                <div className="flex justify-between items-center px-4 pb-4 border-b border-black/5">
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30">Item</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30">Price</span>
+                </div>
+
+                <div className="space-y-4 max-h-[350px] overflow-y-auto custom-scrollbar px-2">
+                  {cartItems.map((item, idx) => (
+                    <div key={`${item.id}-${item.size}-${idx}`}
+                      className="group flex justify-between items-center gap-6 p-4 rounded-3xl hover:bg-white transition-all duration-500 border border-transparent hover:border-black/5"
+                    >
+                      <div className="flex items-center gap-5">
+                        <div className="relative w-16 h-16 bg-gray-50 rounded-2xl shrink-0 border border-black/5 overflow-hidden">
+                          <Image src={item.image} alt={item.name} width={64} height={64} className="object-cover transition-transform duration-700 group-hover:scale-110" />
                         </div>
-                        {isSelected && (
-                          <CheckCircle2 size={18} className="text-blue-600 flex-shrink-0 mt-1" />
-                        )}
-                      </button>
-                    );
-                  })}
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUseNewAddress(true);
-                      setSelectedAddressId(null);
-                      setForm((f) => ({
-                        ...f,
-                        firstName: "",
-                        lastName: "",
-                        street: "",
-                        apartment: "",
-                        city: "",
-                        district: "Dhaka",
-                        postalCode: "",
-                        phone: "",
-                      }));
-                    }}
-                    className={`w-full flex items-center gap-2 p-4 rounded-xl border-2 text-sm font-bold transition-all ${
-                      useNewAddress
-                        ? "border-blue-500 bg-white text-blue-700 shadow-sm"
-                        : "border-dashed border-gray-200 text-gray-500 hover:border-blue-300 hover:text-blue-600"
-                    }`}
-                  >
-                    <Plus size={15} />
-                    Enter a new address
-                  </button>
+                        <div className="min-w-0">
+                          <p className="text-sm font-black tracking-tight text-[#0B1221] line-clamp-1">
+                            {item.name}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[10px] font-bold text-blue-600">× {item.quantity}</span>
+                            <div className="w-1 h-1 rounded-full bg-gray-200" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-[#0B1221]/30">Size: {item.size}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <span className="text-sm font-black text-[#0B1221] shrink-0">৳{item.price * item.quantity}</span>
+                    </div>
+                  ))}
                 </div>
-              )}
-            </div>
-          )}
-
-          {/* ── Billing Form ── */}
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">First name *</label>
-                <input required value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
-                  placeholder="First name" type="text"
-                  className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-black"
-                />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Last name *</label>
-                <input required value={form.lastName} onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
-                  placeholder="Last name" type="text"
-                  className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-black"
-                />
-              </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Country / Region *</label>
-              <select className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-black bg-white">
-                <option>Bangladesh</option>
-              </select>
-            </div>
+              <div className="space-y-6 pt-8 border-t border-black/5">
+                <div className="flex justify-between items-center px-4 text-sm font-bold text-[#0B1221]">
+                  <span className="opacity-40 uppercase tracking-widest text-[10px] font-black">Subtotal</span>
+                  <span>৳{totalPrice}</span>
+                </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Street address *</label>
-              <input required value={form.street} onChange={(e) => setForm((f) => ({ ...f, street: e.target.value }))}
-                type="text" placeholder="House number and street name"
-                className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-black mb-3"
-              />
-              <input value={form.apartment} onChange={(e) => setForm((f) => ({ ...f, apartment: e.target.value }))}
-                type="text" placeholder="Apartment, suite, unit, etc. (optional)"
-                className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-black"
-              />
-            </div>
+                <div className="px-4 space-y-4">
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30 block mb-2">Shipping Method</span>
+                  <div className="grid grid-cols-1 gap-4">
+                    <label className={`flex items-center justify-between p-5 rounded-3xl border-2 transition-all duration-500 cursor-pointer ${shippingCost === 60 ? 'border-blue-600 bg-white ring-4 ring-blue-500/5' : 'border-black/5 bg-gray-50/50 grayscale opacity-40 hover:opacity-100 hover:grayscale-0'}`}>
+                      <div className="flex items-center gap-4">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${shippingCost === 60 ? 'bg-blue-600 text-white' : 'bg-white text-gray-400'}`}>
+                          <CheckCircle2 size={18} strokeWidth={2} />
+                        </div>
+                        <span className="text-xs font-black uppercase tracking-widest">Inside Dhaka</span>
+                      </div>
+                      <span className="text-sm font-black">৳60</span>
+                      <input type="radio" name="shipping" className="hidden" checked={shippingCost === 60} onChange={() => setShippingCost(60)} />
+                    </label>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Town / City *</label>
-              <input required value={form.city} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
-                placeholder="Town / City" type="text"
-                className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-black"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">District *</label>
-              <select required value={form.district} onChange={(e) => setForm((f) => ({ ...f, district: e.target.value }))}
-                className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-black bg-white"
-              >
-                <option value="">Select an option...</option>
-                {["Dhaka","Chittagong","Sylhet","Rajshahi","Khulna","Barishal","Mymensingh","Rangpur","Comilla","Gazipur","Narayanganj"].map((d) => (
-                  <option key={d}>{d}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Postcode / ZIP (optional)</label>
-              <input value={form.postalCode} onChange={(e) => setForm((f) => ({ ...f, postalCode: e.target.value }))}
-                placeholder="Postcode / ZIP" type="text"
-                className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-black"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
-              <input required value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-                placeholder="Phone" type="tel"
-                className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-black"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email address *</label>
-              <input required value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                placeholder="Email address" type="email"
-                className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-black"
-              />
-            </div>
-
-            <div className="pt-4">
-              <h3 className="text-lg font-bold mb-4">Additional information</h3>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Order notes (optional)</label>
-              <textarea
-                rows={4}
-                value={form.notes}
-                onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-                placeholder="Notes about your order, e.g. special notes for delivery."
-                className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-black"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Order Summary */}
-        <div className="w-full lg:w-1/3">
-          <div className="border border-gray-200 p-6 rounded-lg bg-gray-50 sticky top-24">
-            <h2 className="text-xl font-bold mb-6">Your order</h2>
-
-            <div className="flex justify-between border-b border-gray-200 pb-4 mb-4">
-              <span className="font-bold">Product</span>
-              <span className="font-bold">Subtotal</span>
-            </div>
-
-            {cartItems.map((item, idx) => (
-              <div key={`${item.id}-${item.size}-${idx}`}
-                className="flex justify-between items-center border-b border-gray-200 pb-4 mb-4 gap-4"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="relative w-12 h-12 bg-white rounded shrink-0 border border-gray-100">
-                    <Image src={item.image} alt={item.name} width={48} height={48} className="object-cover rounded w-12 h-12" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium line-clamp-2">
-                      {item.name}{" "}
-                      <span className="text-gray-500 whitespace-nowrap">× {item.quantity}</span>
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">Size: {item.size}</p>
+                    <label className={`flex items-center justify-between p-5 rounded-3xl border-2 transition-all duration-500 cursor-pointer ${shippingCost === 120 ? 'border-blue-600 bg-white ring-4 ring-blue-500/5' : 'border-black/5 bg-gray-50/50 grayscale opacity-40 hover:opacity-100 hover:grayscale-0'}`}>
+                      <div className="flex items-center gap-4">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${shippingCost === 120 ? 'bg-blue-600 text-white' : 'bg-white text-gray-400'}`}>
+                          <CheckCircle2 size={18} strokeWidth={2} />
+                        </div>
+                        <span className="text-xs font-black uppercase tracking-widest">Outside Dhaka</span>
+                      </div>
+                      <span className="text-sm font-black">৳120</span>
+                      <input type="radio" name="shipping" className="hidden" checked={shippingCost === 120} onChange={() => setShippingCost(120)} />
+                    </label>
                   </div>
                 </div>
-                <span className="font-medium shrink-0">{item.price * item.quantity}৳</span>
-              </div>
-            ))}
 
-            <div className="flex justify-between border-b border-gray-200 pb-4 mb-4 mt-6">
-              <span className="font-medium">Subtotal</span>
-              <span className="font-medium">{totalPrice}৳</span>
-            </div>
-
-            <div className="border-b border-gray-200 pb-4 mb-4">
-              <span className="font-medium block mb-2">Shipping</span>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-100 px-2 py-1 rounded -ml-2">
-                  <input type="radio" name="shipping" className="accent-black" checked={shippingCost === 60} onChange={() => setShippingCost(60)} />
-                  <span>Inside Dhaka: <span className="font-medium">60৳</span></span>
-                </label>
-                <label className="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-100 px-2 py-1 rounded -ml-2">
-                  <input type="radio" name="shipping" className="accent-black" checked={shippingCost === 120} onChange={() => setShippingCost(120)} />
-                  <span>Outside Dhaka: <span className="font-medium">120৳</span></span>
-                </label>
-              </div>
-            </div>
-
-            <div className="flex justify-between border-b border-gray-200 pb-4 mb-6">
-              <span className="font-bold text-lg">Total</span>
-              <span className="font-bold text-lg text-blue-600">{totalPrice + shippingCost}৳</span>
-            </div>
-
-            <div className="mb-6">
-              <label className="flex items-start gap-2 text-sm cursor-pointer">
-                <input type="radio" name="payment" className="mt-1 accent-black" defaultChecked />
-                <div>
-                  <span className="font-bold block">Cash on delivery</span>
-                  <span className="text-gray-500 text-xs">Pay with cash upon delivery.</span>
+                <div className="flex justify-between items-end px-4 py-8 bg-[#0B1221] rounded-[2.5rem] mt-10 shadow-2xl shadow-black/20">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">Total Amount</span>
+                    <span className="hero-display text-4xl tracking-tighter text-white">৳{totalPrice + shippingCost}</span>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <CheckCircle2 size={24} className="text-blue-500 mb-2" strokeWidth={1.5} />
+                    <span className="text-[9px] font-black text-white/40 uppercase tracking-widest px-2.5 py-1.5 border border-white/10 rounded-full bg-white/5">
+                        Cash on Delivery
+                    </span>
+                  </div>
                 </div>
-              </label>
+
+                <button
+                  type="submit"
+                  className="btn-glow w-full bg-blue-600 text-white py-6 rounded-[2.2rem] text-[10px] font-black uppercase tracking-[0.4em] hover:bg-blue-700 transition-all shadow-2xl shadow-blue-500/20 active:scale-[0.98] mt-8 flex items-center justify-center gap-4"
+                >
+                  Place Order
+                  <div className="w-5 h-px bg-white/30" />
+                </button>
+
+                <p className="text-[9px] font-medium text-center text-[#0B1221]/30 uppercase tracking-[0.2em] px-8 leading-relaxed mt-4">
+                  Orders are processed and dispatched from our warehouse. <br /> Secure checkout active.
+                </p>
+              </div>
             </div>
-
-            <p className="text-xs text-gray-500 mb-6 leading-relaxed">
-              Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our{" "}
-              <Link href="/privacy" className="text-blue-600 hover:underline">privacy policy</Link>.
-            </p>
-
-            <button
-              type="submit"
-              className="w-full bg-[#0B1221] text-white py-3.5 rounded-md font-bold hover:bg-gray-800 transition-colors shadow-black/10 shadow-sm active:scale-[0.98]"
-            >
-              Place order
-            </button>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

@@ -2,64 +2,88 @@ import { BackButton } from "@/components/common/BackButton";
 
 export default function AboutPage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <BackButton className="mb-4" />
-      <h1 className="text-4xl font-black text-gray-900 mb-8">
-        About Believers
-      </h1>
+    <div className="min-h-screen bg-gray-50/50">
+      {/* Premium Hero Banner */}
+      <div className="relative h-[40vh] bg-[#0B1221] flex flex-col items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-indigo-900/40 opacity-50" />
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500/10 via-transparent to-transparent opacity-60" />
+        
+        <div className="absolute top-8 left-8 z-20">
+          <BackButton className="bg-white/10 text-white backdrop-blur-md border-white/10 hover:bg-white/20" />
+        </div>
 
-      <div className="prose prose-lg max-w-none text-gray-700">
-        <p className="mb-6">
-          Believers Sign is one of the largest Islamic Lifestyle brands in
-          Bangladesh. We started our journey in 2018 with a vision to provide
-          high-quality, modest, and stylish clothing for the modern Muslim.
-        </p>
+        <div className="relative z-10 text-center px-6 mt-12">
+          <p className="text-blue-400 text-[10px] sm:text-xs font-black tracking-[0.5em] md:tracking-[0.8em] uppercase mb-4 md:mb-6 animate-in fade-in slide-in-from-top-4 duration-700">
+            Discover
+          </p>
+          <h1 className="hero-display text-4xl md:text-6xl text-white uppercase tracking-tighter animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+            About Believers.
+          </h1>
+        </div>
+      </div>
 
-        <p className="mb-6">
-          Our product line includes premium Panjabis, Thobes, Shirts, T-shirts,
-          Polo Shirts, Pants, Trousers, Attars, Gadgets, Perfumes, Sneakers,
-          Natural Foods, Tupis, and Winter collections. We carefully source our
-          materials and ensure the highest standards of craftsmanship in every
-          product we offer.
-        </p>
+      {/* Content Container */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-24 -mt-12 sm:-mt-20 relative z-20">
+        <div className="bg-white rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-14 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] border border-black/5 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+          <div className="prose prose-lg sm:prose-xl max-w-none text-gray-600">
+            <p className="text-lg sm:text-2xl font-medium text-[#0B1221] leading-relaxed mb-10">
+              Believers Sign is one of the largest Islamic Lifestyle brands in
+              Bangladesh. We started our journey in 2018 with a vision to provide
+              high-quality, modest, and stylish clothing for the modern Muslim.
+            </p>
 
-        <h2 className="text-2xl font-bold text-black mt-10 mb-4">
-          Our Mission
-        </h2>
-        <p className="mb-6">
-          To inspire and empower individuals to embrace an Islamic lifestyle
-          with confidence and elegance, by offering premium quality products
-          that blend tradition with contemporary fashion.
-        </p>
+            <p className="leading-loose mb-12">
+              Our product line includes premium Panjabis, Thobes, Shirts, T-shirts,
+              Polo Shirts, Pants, Trousers, Attars, Gadgets, Perfumes, Sneakers,
+              Natural Foods, Tupis, and Winter collections. We carefully source our
+              materials and ensure the highest standards of craftsmanship in every
+              product we offer.
+            </p>
 
-        <h2 className="text-2xl font-bold text-black mt-10 mb-4">Our Vision</h2>
-        <p className="mb-6">
-          To become the leading global brand for Islamic lifestyle products,
-          recognized for our commitment to quality, authenticity, and customer
-          satisfaction.
-        </p>
+            <div className="grid sm:grid-cols-2 gap-8 my-16">
+              <div className="bg-blue-50/50 p-8 rounded-[2rem] border border-blue-100/50 hover:shadow-xl transition-shadow duration-500">
+                <h2 className="text-sm font-black text-blue-600 uppercase tracking-widest mt-0 mb-4">
+                  Our Mission
+                </h2>
+                <p className="text-sm leading-relaxed m-0 text-gray-700">
+                  To inspire and empower individuals to embrace an Islamic lifestyle
+                  with confidence and elegance, by offering premium quality products
+                  that blend tradition with contemporary fashion.
+                </p>
+              </div>
+              <div className="bg-orange-50/50 p-8 rounded-[2rem] border border-orange-100/50 hover:shadow-xl transition-shadow duration-500">
+                <h2 className="text-sm font-black text-orange-600 uppercase tracking-widest mt-0 mb-4">
+                  Our Vision
+                </h2>
+                <p className="text-sm leading-relaxed m-0 text-gray-700">
+                  To become the leading global brand for Islamic lifestyle products,
+                  recognized for our commitment to quality, authenticity, and customer
+                  satisfaction.
+                </p>
+              </div>
+            </div>
 
-        <h2 className="text-2xl font-bold text-black mt-10 mb-4">
-          Why Choose Us?
-        </h2>
-        <ul className="list-disc pl-6 space-y-2 mb-6">
-          <li>
-            <strong>Premium Quality:</strong> We use only the finest materials
-            and ensure rigorous quality control.
-          </li>
-          <li>
-            <strong>Exclusive Designs:</strong> Our products feature unique and
-            modern designs that stand out.
-          </li>
-          <li>
-            <strong>Customer Satisfaction:</strong> We prioritize our customers
-            and offer a seamless shopping experience.
-          </li>
-          <li>
-            <strong>Ethical Practices:</strong> We are committed to ethical
-            sourcing and manufacturing processes.
-          </li>
-        </ul>
+            <h2 className="text-2xl font-black text-[#0B1221] mt-16 mb-8 uppercase tracking-tight">
+              Why Choose Us?
+            </h2>
+            <div className="space-y-6">
+              {[
+                { title: "Premium Quality", desc: "We use only the finest materials and ensure rigorous quality control." },
+                { title: "Exclusive Designs", desc: "Our products feature unique and modern designs that stand out." },
+                { title: "Customer Satisfaction", desc: "We prioritize our customers and offer a seamless shopping experience." },
+                { title: "Ethical Practices", desc: "We are committed to ethical sourcing and manufacturing processes." },
+              ].map((item, i) => (
+                <div key={i} className="flex gap-4 items-start group">
+                  <div className="mt-1 w-2 h-2 rounded-full bg-blue-600 group-hover:scale-150 transition-transform" />
+                  <div>
+                    <h3 className="text-base font-bold text-[#0B1221] m-0 mb-1">{item.title}</h3>
+                    <p className="text-sm m-0 text-gray-500">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
