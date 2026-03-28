@@ -4,7 +4,9 @@ import { ProductCard } from "../product/ProductCard";
 
 const panjabiProducts = products.filter((p) => p.category === "panjabi");
 const tshirtProducts = products.filter((p) => p.category === "t-shirt");
-const luxuryPanjabiProducts = products.filter((p) => p.category === "luxury-panjabi").slice(0, 4);
+const luxuryPanjabiProducts = products
+  .filter((p) => p.category === "luxury-panjabi")
+  .slice(0, 4);
 
 function BannerSection({
   img,
