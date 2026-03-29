@@ -33,7 +33,7 @@ function BannerSection({
           fill
           className="object-cover opacity-60 transition-transform duration-[2s] ease-out group-hover:scale-110"
         />
-        
+
         {/* Advanced Gradient Overlays */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#0B1221] via-[#0B1221]/40 to-transparent z-10" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B1221]/80 via-transparent to-transparent z-10" />
@@ -58,12 +58,23 @@ function BannerSection({
           {/* Right Side: CTA Button */}
           <div className="mt-8 md:mt-0 pointer-events-auto">
             <Link
-              href={`/products?category=${category}`}
+              href={`/products?category=${category.toLowerCase()?.replace(" ", "-")}`}
               className="btn-glow inline-flex items-center gap-4 bg-white text-[#0B1221] px-10 md:px-14 py-4 md:py-6 rounded-full font-black text-[10px] md:text-[12px] transition-all hover:scale-105 shadow-[0_20px_50px_rgba(255,255,255,0.2)] uppercase tracking-[0.2em] group/btn active:scale-95"
             >
               Explore More
               <div className="w-8 h-8 rounded-full bg-[#0B1221] flex items-center justify-center text-white group-hover/btn:translate-x-1 transition-transform">
-                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 12h14m-7-7 7 7-7 7" />
+                </svg>
               </div>
             </Link>
           </div>

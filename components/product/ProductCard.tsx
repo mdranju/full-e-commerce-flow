@@ -18,7 +18,6 @@ export function ProductCard({ product }: { product: any }) {
         <Image
           src={product.image}
           alt={product.name}
-          // fill
           width={1000}
           height={1000}
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
@@ -28,19 +27,19 @@ export function ProductCard({ product }: { product: any }) {
       <div className="p-4 flex flex-col flex-grow bg-white">
         <Link
           href={`/product/${product.slug}`}
-          className="text-sm font-semibold text-gray-800 hover:text-blue-600 transition-colors line-clamp-2 mb-3 leading-snug"
+          className="text-sm text-center font-semibold text-gray-800 hover:text-blue-600 transition-colors line-clamp-2 leading-snug "
         >
           {product.name}
         </Link>
-        <div className="mt-auto flex items-center gap-2 mb-4">
-          <span className="text-base font-bold text-gray-900">
-            ৳{product.price}
-          </span>
+        <div className="mt-auto flex items-center justify-center gap-2 mb-2">
           {product.originalPrice && (
             <span className="text-xs text-gray-400 line-through">
               ৳{product.originalPrice}
             </span>
           )}
+          <span className="text-base font-bold text-gray-900">
+            ৳{product.price}
+          </span>
         </div>
         <Link
           href={`/product/${product.slug}`}

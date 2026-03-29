@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { removeFromCart, updateQuantity } from "@/src/store/slices/cartSlice";
-import { toast } from "sonner";
+import { premiumToast as toast } from "@/components/ui/PremiumToast";
 
 interface CartSidebarProps {
   isOpen: boolean;
@@ -50,7 +50,11 @@ export function CartSidebar({
             onClick={onClose}
             className="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-2xl hover:bg-white hover:shadow-xl hover:shadow-black/5 transition-all duration-500 group"
           >
-            <X size={20} className="text-[#0B1221] group-hover:rotate-90 transition-transform duration-500" strokeWidth={1.5} />
+            <X
+              size={20}
+              className="text-[#0B1221] group-hover:rotate-90 transition-transform duration-500"
+              strokeWidth={1.5}
+            />
           </button>
         </div>
 
@@ -102,8 +106,13 @@ export function CartSidebar({
                         </h3>
                         <button
                           onClick={() => {
-                            dispatch(removeFromCart({ id: item.id, size: item.size }));
-                            toast.info("Item Removed", { description: "The item has been removed from your cart." });
+                            dispatch(
+                              removeFromCart({ id: item.id, size: item.size }),
+                            );
+                            toast.info("Item Removed", {
+                              description:
+                                "The item has been removed from your cart.",
+                            });
                           }}
                           className="text-[#0B1221]/20 hover:text-red-500 transition-colors"
                         >
@@ -130,7 +139,13 @@ export function CartSidebar({
                       <div className="flex items-center gap-4 bg-white border border-black/5 rounded-2xl px-3 py-1.5 shadow-sm">
                         <button
                           onClick={() =>
-                            dispatch(updateQuantity({ id: item.id, size: item.size, quantity: Math.max(1, item.quantity - 1) }))
+                            dispatch(
+                              updateQuantity({
+                                id: item.id,
+                                size: item.size,
+                                quantity: Math.max(1, item.quantity - 1),
+                              }),
+                            )
                           }
                           className="w-6 h-6 flex items-center justify-center text-[#0B1221]/40 hover:text-blue-500 transition-colors"
                         >
@@ -141,7 +156,13 @@ export function CartSidebar({
                         </span>
                         <button
                           onClick={() =>
-                            dispatch(updateQuantity({ id: item.id, size: item.size, quantity: item.quantity + 1 }))
+                            dispatch(
+                              updateQuantity({
+                                id: item.id,
+                                size: item.size,
+                                quantity: item.quantity + 1,
+                              }),
+                            )
                           }
                           className="w-6 h-6 flex items-center justify-center text-[#0B1221]/40 hover:text-blue-500 transition-colors"
                         >
@@ -165,14 +186,18 @@ export function CartSidebar({
                   Total Amount
                 </span>
                 <span className="hero-display text-3xl tracking-tighter text-[#0B1221]">
-                  ৳{cartItems.reduce((total, item) => total + item.price * item.quantity, 0)}
+                  ৳
+                  {cartItems.reduce(
+                    (total, item) => total + item.price * item.quantity,
+                    0,
+                  )}
                 </span>
               </div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-1">
+              <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-1 sr-only">
                 Tax Included
               </p>
             </div>
-            
+
             <Link
               href="/checkout"
               onClick={onClose}

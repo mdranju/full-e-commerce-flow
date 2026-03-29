@@ -35,6 +35,65 @@ export const products = [
       "/template-3.jpg",
     ],
     badge: "540 Flat",
+    sizes: [
+      {
+        name: "S",
+        inStock: true,
+        stock: 10,
+        sku: "SKU-PJ001-S",
+      },
+      {
+        name: "M",
+        inStock: true,
+        stock: 10,
+        sku: "SKU-PJ002-M",
+      },
+      {
+        name: "L",
+        inStock: true,
+        stock: 10,
+        sku: "SKU-PJ003-L",
+      },
+      {
+        name: "XL",
+        inStock: true,
+        stock: 10,
+        sku: "SKU-PJ004-XL",
+      },
+      {
+        name: "XXL",
+        inStock: true,
+        stock: 10,
+        sku: "SKU-PJ005-XXL",
+      },
+    ],
+    colors: [
+      {
+        name: "Red",
+        value: "#FF0000",
+      },
+      {
+        name: "Green",
+        value: "#00FF00",
+      },
+      {
+        name: "Blue",
+        value: "#0000FF",
+      },
+      {
+        name: "Yellow",
+        value: "#FFFF00",
+      },
+      {
+        name: "Black",
+        value: "#000000",
+      },
+      {
+        name: "White",
+        value: "#FFFFFF",
+      },
+    ],
+
     inStock: true,
   },
   {

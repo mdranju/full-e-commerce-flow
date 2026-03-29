@@ -15,7 +15,7 @@ export function BackButton({ className = "" }: BackButtonProps) {
       onClick={() => router.back()}
       className={`lg:hidden flex items-center gap-1.5 px-3 py-2 -ml-2 -mt-5 text-gray-600 hover:text-black transition-colors active:scale-95 ${className}`}
     >
-      <div className="p-1 bg-white rounded-full shadow-sm border border-gray-100">
+      <div className="p-1 rounded-full shadow-sm border-2 border-gray-100">
         <ChevronLeft size={18} />
       </div>
       <span className="text-sm font-bold">Back</span>

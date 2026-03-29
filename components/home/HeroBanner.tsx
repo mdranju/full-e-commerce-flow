@@ -54,7 +54,7 @@ function HeroBanner() {
             loop={true}
             effect="fade"
             fadeEffect={{ crossFade: true }}
-            autoplay={{ delay: 6000, disableOnInteraction: false }}
+            autoplay={{ delay: 4000, disableOnInteraction: false }}
             pagination={{
               clickable: true,
               dynamicBullets: false,
