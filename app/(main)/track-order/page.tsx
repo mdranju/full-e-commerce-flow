@@ -1,6 +1,61 @@
 import { BackButton } from "@/components/common/BackButton";
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { AlertCircle } from "lucide-react";
 
 export default function TrackOrderPage() {
+  const [form, setForm] = useState({ orderId: "", email: "" });
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+
+  const handleInputChange = (field: string, value: string) => {
+    setForm((f) => ({ ...f, [field]: value }));
+    if (validationErrors[field]) {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    if (!form.orderId.trim()) errors.orderId = "Order ID is required";
+    if (!form.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+      errors.email = "Invalid email format";
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleTrack = () => {
+    if (validateForm()) {
+      setLoading(true);
+      // Simulate tracking
+      setTimeout(() => setLoading(false), 2000);
+    }
+  };
+
+  const renderError = (field: string) => (
+    <AnimatePresence>
+      {validationErrors[field] && (
+        <motion.p
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -5 }}
+          className="text-red-500 text-[10px] font-bold uppercase tracking-widest ml-4 mt-1.5 flex items-center gap-1.5"
+        >
+          <AlertCircle size={10} />
+          {validationErrors[field]}
+        </motion.p>
+      )}
+    </AnimatePresence>
+  );
+
   return (
     <div className="min-h-screen bg-[#f8fafc]/50 pb-20 lg:pb-32">
       {/* 1. Track Order Hero */}
@@ -51,35 +106,42 @@ export default function TrackOrderPage() {
                 </p>
               </div>
 
-              <form className="space-y-10 relative z-10">
+              <form className="space-y-10 relative z-10" noValidate onSubmit={(e) => { e.preventDefault(); handleTrack(); }}>
                 <div className="group space-y-3">
-                  <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.4em] ml-4 group-focus-within:text-blue-600 transition-colors">
+                  <label className={`text-[10px] font-black uppercase tracking-[0.4em] ml-4 transition-colors ${validationErrors.orderId ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
                     Order ID *
                   </label>
                   <input
                     type="text"
+                    value={form.orderId}
+                    onChange={(e) => handleInputChange("orderId", e.target.value)}
                     placeholder="Found in your confirmation email."
-                    className="w-full bg-gray-50/50 border border-black/5 rounded-[1.8rem] px-8 py-5 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20"
+                    className={`w-full border rounded-[1.8rem] px-8 py-5 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold ${validationErrors.orderId ? "bg-red-50/20 border-red-500 text-red-600" : "bg-gray-50/50 border-black/5 text-[#0B1221] focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20"}`}
                   />
+                  {renderError("orderId")}
                 </div>
 
                 <div className="group space-y-3">
-                  <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.4em] ml-4 group-focus-within:text-blue-600 transition-colors">
+                  <label className={`text-[10px] font-black uppercase tracking-[0.4em] ml-4 transition-colors ${validationErrors.email ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
                     Email Address *
                   </label>
                   <input
                     type="email"
+                    value={form.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
                     placeholder="The email used during checkout."
-                    className="w-full bg-gray-50/50 border border-black/5 rounded-[1.8rem] px-8 py-5 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20"
+                    className={`w-full border rounded-[1.8rem] px-8 py-5 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold ${validationErrors.email ? "bg-red-50/20 border-red-500 text-red-600" : "bg-gray-50/50 border-black/5 text-[#0B1221] focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20"}`}
                   />
+                  {renderError("email")}
                 </div>
 
                 <div className="pt-6">
                   <button
-                    type="button"
-                    className="btn-glow w-full bg-[#0B1221] text-white py-6 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black transition-all shadow-2xl shadow-black/20"
+                    type="submit"
+                    disabled={loading}
+                    className="btn-glow w-full bg-[#0B1221] text-white py-6 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.4em] hover:bg-black transition-all shadow-2xl shadow-black/20 disabled:opacity-50"
                   >
-                    Track Now
+                    {loading ? "Tracking..." : "Track Now"}
                   </button>
                 </div>
               </form>

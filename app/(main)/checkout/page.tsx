@@ -1,12 +1,12 @@
 "use client";
 
-import { clearCart } from "@/src/store/slices/cartSlice";
+import { clearCart, removeFromCart, updateQuantity } from "@/src/store/slices/cartSlice";
 import { RootState } from "@/src/store/store";
 import { useAddresses, Address } from "@/hooks/useAddresses";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { premiumToast as toast } from "@/components/ui/PremiumToast";
 import {
@@ -14,11 +14,15 @@ import {
   Home,
   Briefcase,
   Plus,
+  Minus,
+  Trash2,
   CheckCircle2,
   ChevronDown,
   ChevronUp,
+  AlertCircle,
 } from "lucide-react";
 import { DISTRICTS } from "@/lib/data";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function CheckoutPage() {
   const { items: cartItems, totalPrice } = useSelector(
@@ -35,6 +39,14 @@ export default function CheckoutPage() {
   const [showSavedAddresses, setShowSavedAddresses] = useState(true);
   const [useNewAddress, setUseNewAddress] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+  // Redirect if cart becomes empty during interaction
+  useEffect(() => {
+    if (cartItems.length === 0 && !isProcessing) {
+      router.replace("/products");
+    }
+  }, [cartItems, isProcessing, router]);
 
   // Controlled form state
   const selectedAddress = selectedAddressId
@@ -57,6 +69,7 @@ export default function CheckoutPage() {
   const applyAddress = (address: Address) => {
     setSelectedAddressId(address.id);
     setUseNewAddress(false);
+    setValidationErrors({});
     setForm((f) => ({
       ...f,
       firstName: address.firstName,
@@ -70,12 +83,48 @@ export default function CheckoutPage() {
     }));
   };
 
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    if (!form.firstName.trim()) errors.firstName = "First name is required";
+    if (!form.lastName.trim()) errors.lastName = "Last name is required";
+    if (!form.street.trim()) errors.street = "Street address is required";
+    if (!form.city.trim()) errors.city = "City is required";
+    if (!form.district.trim()) errors.district = "District is required";
+    if (!form.phone.trim()) errors.phone = "Phone number is required";
+    if (!form.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+      errors.email = "Invalid email format";
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setForm((f) => ({ ...f, [field]: value }));
+    if (validationErrors[field]) {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (cartItems.length === 0) {
       toast.error("Cart is Empty", {
         description:
           "Please add items to your cart before proceeding to checkout.",
+      });
+      return;
+    }
+
+    if (!validateForm()) {
+      toast.warning("Incomplete Form", {
+        description: "Please fill in all required fields correctly.",
       });
       return;
     }
@@ -107,6 +156,22 @@ export default function CheckoutPage() {
 
     router.push("/thank-you");
   };
+
+  const renderError = (field: string) => (
+    <AnimatePresence>
+      {validationErrors[field] && (
+        <motion.p
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -5 }}
+          className="text-red-500 text-[9px] font-bold uppercase tracking-widest ml-4 mt-1.5 flex items-center gap-1.5"
+        >
+          <AlertCircle size={10} />
+          {validationErrors[field]}
+        </motion.p>
+      )}
+    </AnimatePresence>
+  );
 
   // State: Processing Order (Modern Summary UI)
   if (isProcessing) {
@@ -202,6 +267,7 @@ export default function CheckoutPage() {
         <form
           onSubmit={handlePlaceOrder}
           className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start"
+          noValidate
         >
           {/* Section 01: Shipping details */}
           <div className="w-full lg:w-3/5 space-y-12">
@@ -304,6 +370,7 @@ export default function CheckoutPage() {
                           postalCode: "",
                           phone: "",
                         }));
+                        setValidationErrors({});
                       }}
                       className={`w-full flex items-center justify-center gap-3 p-5 rounded-[1.8rem] border-2 text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-500 ${
                         useNewAddress
@@ -323,34 +390,30 @@ export default function CheckoutPage() {
             <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="group space-y-2.5">
-                  <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">
+                  <label className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.firstName ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
                     First Name *
                   </label>
                   <input
-                    required
                     value={form.firstName}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, firstName: e.target.value }))
-                    }
+                    onChange={(e) => handleInputChange("firstName", e.target.value)}
                     placeholder="Enter First Name"
                     type="text"
-                    className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl focus:shadow-black/5"
+                    className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.firstName ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl focus:shadow-black/5"}`}
                   />
+                  {renderError("firstName")}
                 </div>
                 <div className="group space-y-2.5">
-                  <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">
+                  <label className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.lastName ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
                     Last Name *
                   </label>
                   <input
-                    required
                     value={form.lastName}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, lastName: e.target.value }))
-                    }
+                    onChange={(e) => handleInputChange("lastName", e.target.value)}
                     placeholder="Enter Last Name"
                     type="text"
-                    className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl focus:shadow-black/5"
+                    className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.lastName ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl focus:shadow-black/5"}`}
                   />
+                  {renderError("lastName")}
                 </div>
               </div>
 
@@ -370,19 +433,16 @@ export default function CheckoutPage() {
               </div>
 
               <div className="group space-y-2.5">
-                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">
+                <label className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.street ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
                   Street Address *
                 </label>
                 <div className="space-y-4">
                   <input
-                    required
                     value={form.street}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, street: e.target.value }))
-                    }
+                    onChange={(e) => handleInputChange("street", e.target.value)}
                     type="text"
                     placeholder="House number and street name"
-                    className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"
+                    className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.street ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
                   />
                   <input
                     value={form.apartment}
@@ -394,36 +454,32 @@ export default function CheckoutPage() {
                     className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"
                   />
                 </div>
+                {renderError("street")}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="group space-y-2.5">
-                  <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">
+                  <label className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.city ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
                     Town / City *
                   </label>
                   <input
-                    required
                     value={form.city}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, city: e.target.value }))
-                    }
+                    onChange={(e) => handleInputChange("city", e.target.value)}
                     placeholder="Enter City"
                     type="text"
-                    className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"
+                    className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.city ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
                   />
+                  {renderError("city")}
                 </div>
                 <div className="group space-y-2.5">
-                  <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.3em] ml-4 group-focus-within:text-blue-600 transition-colors">
+                  <label className={`text-[10px] font-black uppercase tracking-[0.3em] ml-4 transition-colors ${validationErrors.district ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
                     District *
                   </label>
                   <div className="relative">
                     <select
-                      required
                       value={form.district}
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, district: e.target.value }))
-                      }
-                      className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl appearance-none"
+                      onChange={(e) => handleInputChange("district", e.target.value)}
+                      className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 text-sm font-bold text-[#0B1221] appearance-none ${validationErrors.district ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
                     >
                       <option value="" selected disabled>
                         Select a district...
@@ -436,9 +492,10 @@ export default function CheckoutPage() {
                     </select>
                     <ChevronDown
                       size={18}
-                      className="absolute right-6 top-1/2 -translate-y-1/2 text-[#0B1221]/20 pointer-events-none"
+                      className={`absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${validationErrors.district ? "text-red-500" : "text-[#0B1221]/20"}`}
                     />
                   </div>
+                  {renderError("district")}
                 </div>
               </div>
 
@@ -447,26 +504,26 @@ export default function CheckoutPage() {
                   Contact Information *
                 </label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <input
-                    required
-                    value={form.phone}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, phone: e.target.value }))
-                    }
-                    placeholder="Phone Number"
-                    type="tel"
-                    className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"
-                  />
-                  <input
-                    required
-                    value={form.email}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, email: e.target.value }))
-                    }
-                    placeholder="Email Address"
-                    type="email"
-                    className="w-full bg-white border border-black/5 rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"
-                  />
+                  <div className="space-y-1.5">
+                    <input
+                      value={form.phone}
+                      onChange={(e) => handleInputChange("phone", e.target.value)}
+                      placeholder="Phone Number"
+                      type="tel"
+                      className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.phone ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
+                    />
+                    {renderError("phone")}
+                  </div>
+                  <div className="space-y-1.5">
+                    <input
+                      value={form.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      placeholder="Email Address"
+                      type="email"
+                      className={`w-full bg-white border rounded-[1.5rem] px-6 py-4 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] ${validationErrors.email ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20 focus:shadow-2xl"}`}
+                    />
+                    {renderError("email")}
+                  </div>
                 </div>
               </div>
 
@@ -518,10 +575,10 @@ export default function CheckoutPage() {
                   {cartItems.map((item, idx) => (
                     <div
                       key={`${item.id}-${item.size}-${idx}`}
-                      className="group flex justify-between items-center gap-6 p-4 rounded-3xl hover:bg-white transition-all duration-500 border border-transparent hover:border-black/5"
+                      className="group relative flex justify-between items-center gap-4 sm:gap-6 p-3 sm:p-5 rounded-3xl hover:bg-white transition-all duration-500 border border-transparent hover:border-black/5"
                     >
-                      <div className="flex items-center gap-5">
-                        <div className="relative w-16 h-16 bg-gray-50 rounded-2xl shrink-0 border border-black/5 overflow-hidden">
+                      <div className="flex items-center gap-4 sm:gap-5">
+                        <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-gray-50 rounded-2xl shrink-0 border border-black/5 overflow-hidden">
                           <Image
                             src={item.image}
                             alt={item.name}
@@ -531,23 +588,48 @@ export default function CheckoutPage() {
                           />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-black tracking-tight text-[#0B1221] line-clamp-1">
+                          <p className="text-xs sm:text-sm font-black tracking-tight text-[#0B1221] line-clamp-1 mb-1.5 uppercase">
                             {item.name}
                           </p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-[10px] font-bold text-blue-600">
-                              × {item.quantity}
-                            </span>
-                            <div className="w-1 h-1 rounded-full bg-gray-200" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-[#0B1221]/30">
-                              Size: {item.size}
+                          <div className="flex flex-wrap items-center gap-3">
+                            <div className="flex items-center gap-1.5 bg-gray-50 p-1 rounded-xl border border-black/5">
+                              <button 
+                                type="button"
+                                onClick={() => dispatch(updateQuantity({ id: item.id, size: item.size, quantity: item.quantity - 1 }))}
+                                disabled={item.quantity <= 1}
+                                className="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-white hover:text-blue-600 transition-all text-[#0B1221]/30 disabled:opacity-30"
+                              >
+                                <Minus size={10} strokeWidth={3} />
+                              </button>
+                              <span className="text-[10px] font-black min-w-4 text-center text-[#0B1221]">{item.quantity}</span>
+                              <button 
+                                type="button"
+                                onClick={() => dispatch(updateQuantity({ id: item.id, size: item.size, quantity: item.quantity + 1 }))}
+                                className="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-white hover:text-blue-600 transition-all text-[#0B1221]/30"
+                              >
+                                <Plus size={10} strokeWidth={3} />
+                              </button>
+                            </div>
+                            <div className="w-1 h-1 rounded-full bg-gray-300" />
+                            <span className="text-[9px] font-black uppercase tracking-widest text-[#0B1221]/20">
+                              SZ: {item.size}
                             </span>
                           </div>
                         </div>
                       </div>
-                      <span className="text-sm font-black text-[#0B1221] shrink-0">
-                        ৳{item.price * item.quantity}
-                      </span>
+                      
+                      <div className="flex flex-col items-end gap-2">
+                        <span className="text-sm font-black text-[#0B1221] shrink-0 group-hover:text-blue-600 transition-colors">
+                          ৳{item.price * item.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => dispatch(removeFromCart({ id: item.id, size: item.size }))}
+                          className="w-8 h-8 flex items-center justify-center rounded-xl bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-lg shadow-red-500/10"
+                        >
+                          <Trash2 size={13} strokeWidth={2.5} />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

@@ -13,13 +13,26 @@ import {
   MapPin,
   ChevronRight,
   Edit3,
+  AlertCircle,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { premiumToast as toast } from "@/components/ui/PremiumToast";
 
 export default function ProfilePage() {
   const [showForm, setShowForm] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+  const user = {
+    name: "Md. Ranju",
+    email: "mdranju.dev@gmail.com",
+    phone: "01799301290",
+    address: "Mohakhali, Dhaka - 1212",
+  };
+
+  const [form, setForm] = useState({ ...user });
 
   const profileActions = [
     {
@@ -53,12 +66,60 @@ export default function ProfilePage() {
     },
   ];
 
-  const user = {
-    name: "Md. Ranju",
-    email: "mdranju.dev@gmail.com",
-    phone: "01799301290",
-    address: "Mohakhali, Dhaka - 1212",
+  const handleInputChange = (field: string, value: string) => {
+    setForm((f) => ({ ...f, [field]: value }));
+    if (validationErrors[field]) {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
   };
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    if (!form.name.trim()) errors.name = "Full name is required";
+    if (!form.phone.trim()) errors.phone = "Phone number is required";
+    if (!form.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+      errors.email = "Invalid email format";
+    }
+    if (!form.address.trim()) errors.address = "Address is required";
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSave = () => {
+    if (validateForm()) {
+      toast.success("Profile Updated", {
+        description: "Your account information has been saved successfully.",
+      });
+      setShowForm(false);
+    } else {
+      toast.warning("Validation Failed", {
+        description: "Please correct the errors in the form before saving.",
+      });
+    }
+  };
+
+  const renderError = (field: string) => (
+    <AnimatePresence>
+      {validationErrors[field] && (
+        <motion.p
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -5 }}
+          className="text-red-500 text-[10px] font-bold uppercase tracking-widest ml-4 mt-1.5 flex items-center gap-1.5"
+        >
+          <AlertCircle size={10} />
+          {validationErrors[field]}
+        </motion.p>
+      )}
+    </AnimatePresence>
+  );
 
   return (
     <div className="min-h-screen bg-[#f8fafc]/50 pb-20 lg:pb-32">
@@ -72,7 +133,7 @@ export default function ProfilePage() {
             Account Details
           </p>
           <h1 className="hero-display text-4xl lg:text-7xl tracking-tighter text-white mb-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 uppercase">
-            {user.name}
+            {form.name}
           </h1>
           <div className="flex items-center justify-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500">
              <div className="h-6 w-px bg-white/20" />
@@ -176,64 +237,73 @@ export default function ProfilePage() {
                   </button>
                 </div>
 
-                <form className="space-y-10">
+                <form className="space-y-10" noValidate onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     <div className="group space-y-3">
-                      <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.4em] ml-4 group-focus-within:text-blue-600 transition-colors">Full Name *</label>
+                      <label className={`text-[10px] font-black uppercase tracking-[0.4em] ml-4 transition-colors ${validationErrors.name ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>Full Name *</label>
                       <div className="relative">
-                        <User size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-[#0B1221]/10 group-focus-within:text-blue-600 transition-all duration-500" strokeWidth={1.5} />
+                        <User size={18} className={`absolute left-6 top-1/2 -translate-y-1/2 transition-all duration-500 ${validationErrors.name ? "text-red-500" : "text-[#0B1221]/10 group-focus-within:text-blue-600"}`} strokeWidth={1.5} />
                         <input
                           type="text"
-                          defaultValue={user.name}
+                          value={form.name}
+                          onChange={(e) => handleInputChange("name", e.target.value)}
                           placeholder="Your full name"
-                          className="w-full bg-gray-50/50 border border-black/5 rounded-[1.8rem] pl-16 pr-8 py-5 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20"
+                          className={`w-full border rounded-[1.8rem] pl-16 pr-8 py-5 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold ${validationErrors.name ? "bg-red-50/20 border-red-500 text-red-600" : "bg-gray-50/50 border-black/5 text-[#0B1221] focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20"}`}
                         />
                       </div>
+                      {renderError("name")}
                     </div>
 
                     <div className="group space-y-3">
-                      <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.4em] ml-4 group-focus-within:text-blue-600 transition-colors">Phone Number *</label>
+                      <label className={`text-[10px] font-black uppercase tracking-[0.4em] ml-4 transition-colors ${validationErrors.phone ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>Phone Number *</label>
                       <div className="relative">
-                        <Phone size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-[#0B1221]/10 group-focus-within:text-blue-600 transition-all duration-500" strokeWidth={1.5} />
+                        <Phone size={18} className={`absolute left-6 top-1/2 -translate-y-1/2 transition-all duration-500 ${validationErrors.phone ? "text-red-500" : "text-[#0B1221]/10 group-focus-within:text-blue-600"}`} strokeWidth={1.5} />
                         <input
                           type="tel"
-                          defaultValue={user.phone}
+                          value={form.phone}
+                          onChange={(e) => handleInputChange("phone", e.target.value)}
                           placeholder="Your phone number"
-                          className="w-full bg-gray-50/50 border border-black/5 rounded-[1.8rem] pl-16 pr-8 py-5 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20"
+                          className={`w-full border rounded-[1.8rem] pl-16 pr-8 py-5 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold ${validationErrors.phone ? "bg-red-50/20 border-red-500 text-red-600" : "bg-gray-50/50 border-black/5 text-[#0B1221] focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20"}`}
                         />
                       </div>
+                      {renderError("phone")}
                     </div>
                   </div>
 
                   <div className="group space-y-3">
-                    <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.4em] ml-4 group-focus-within:text-blue-600 transition-colors">Email Address *</label>
+                    <label className={`text-[10px] font-black uppercase tracking-[0.4em] ml-4 transition-colors ${validationErrors.email ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>Email Address *</label>
                     <div className="relative">
-                      <Mail size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-[#0B1221]/10 group-focus-within:text-blue-600 transition-all duration-500" strokeWidth={1.5} />
+                      <Mail size={18} className={`absolute left-6 top-1/2 -translate-y-1/2 transition-all duration-500 ${validationErrors.email ? "text-red-500" : "text-[#0B1221]/10 group-focus-within:text-blue-600"}`} strokeWidth={1.5} />
                       <input
                         type="email"
-                        defaultValue={user.email}
+                        value={form.email}
+                        onChange={(e) => handleInputChange("email", e.target.value)}
                         placeholder="Your email address"
-                        className="w-full bg-gray-50/50 border border-black/5 rounded-[1.8rem] pl-16 pr-8 py-5 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20"
+                        className={`w-full border rounded-[1.8rem] pl-16 pr-8 py-5 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold ${validationErrors.email ? "bg-red-50/20 border-red-500 text-red-600" : "bg-gray-50/50 border-black/5 text-[#0B1221] focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20"}`}
                       />
                     </div>
+                    {renderError("email")}
                   </div>
 
                   <div className="group space-y-3">
-                    <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-[0.4em] ml-4 group-focus-within:text-blue-600 transition-colors">Home Address *</label>
+                    <label className={`text-[10px] font-black uppercase tracking-[0.4em] ml-4 transition-colors ${validationErrors.address ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>Home Address *</label>
                     <div className="relative">
-                      <MapPin size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-[#0B1221]/10 group-focus-within:text-blue-600 transition-all duration-500" strokeWidth={1.5} />
+                      <MapPin size={18} className={`absolute left-6 top-1/2 -translate-y-1/2 transition-all duration-500 ${validationErrors.address ? "text-red-500" : "text-[#0B1221]/10 group-focus-within:text-blue-600"}`} strokeWidth={1.5} />
                       <input
                         type="text"
-                        defaultValue={user.address}
+                        value={form.address}
+                        onChange={(e) => handleInputChange("address", e.target.value)}
                         placeholder="Your physical home address"
-                        className="w-full bg-gray-50/50 border border-black/5 rounded-[1.8rem] pl-16 pr-8 py-5 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold text-[#0B1221] focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20"
+                        className={`w-full border rounded-[1.8rem] pl-16 pr-8 py-5 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold ${validationErrors.address ? "bg-red-50/20 border-red-500 text-red-600" : "bg-gray-50/50 border-black/5 text-[#0B1221] focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20"}`}
                       />
                     </div>
+                    {renderError("address")}
                   </div>
 
                   <div className="pt-8 flex flex-col sm:flex-row gap-6">
                     <button
                       type="button"
+                      onClick={handleSave}
                       className="btn-glow px-12 py-5 bg-blue-600 text-white rounded-[1.8rem] text-[10px] font-black uppercase tracking-[0.4em] hover:bg-blue-700 transition-all shadow-2xl shadow-blue-500/20"
                     >
                       Save Changes

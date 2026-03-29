@@ -2,16 +2,61 @@
 
 import { BackButton } from "@/components/common/BackButton";
 import { useState } from "react";
-import { MessageSquare, CheckCircle } from "lucide-react";
+import { MessageSquare, CheckCircle, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function ComplainPage() {
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", orderId: "", type: "Product Issue", message: "" });
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+  const handleInputChange = (field: string, value: string) => {
+    setForm((f) => ({ ...f, [field]: value }));
+    if (validationErrors[field]) {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    if (!form.name.trim()) errors.name = "Your name is required";
+    if (!form.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+      errors.email = "Invalid email format";
+    }
+    if (!form.message.trim()) errors.message = "Please describe your issue";
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    if (validateForm()) {
+      setSubmitted(true);
+    }
   };
+
+  const renderError = (field: string) => (
+    <AnimatePresence>
+      {validationErrors[field] && (
+        <motion.p
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -5 }}
+          className="text-red-500 text-[10px] font-black uppercase tracking-widest pl-4 mt-2 flex items-center gap-1.5"
+        >
+          <AlertCircle size={10} />
+          {validationErrors[field]}
+        </motion.p>
+      )}
+    </AnimatePresence>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -57,17 +102,19 @@ export default function ComplainPage() {
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl mx-auto">
+            <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl mx-auto" noValidate>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-4">Your Name *</label>
-                  <input required value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                    placeholder="Full name" className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-2xl text-sm font-medium outline-none focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all" />
+                  <label className={`text-[10px] font-black uppercase tracking-widest pl-4 transition-colors ${validationErrors.name ? "text-red-500" : "text-gray-400"}`}>Your Name *</label>
+                  <input value={form.name} onChange={(e) => handleInputChange("name", e.target.value)}
+                    placeholder="Full name" className={`w-full px-6 py-4 rounded-2xl text-sm font-medium outline-none transition-all duration-300 ${validationErrors.name ? "bg-red-50/20 border-red-500 text-red-600 focus:bg-white" : "bg-gray-50/50 border-gray-100 focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"}`} />
+                  {renderError("name")}
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-4">Email Address *</label>
-                  <input required type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                    placeholder="your@email.com" className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-2xl text-sm font-medium outline-none focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all" />
+                  <label className={`text-[10px] font-black uppercase tracking-widest pl-4 transition-colors ${validationErrors.email ? "text-red-500" : "text-gray-400"}`}>Email Address *</label>
+                  <input type="email" value={form.email} onChange={(e) => handleInputChange("email", e.target.value)}
+                    placeholder="your@email.com" className={`w-full px-6 py-4 rounded-2xl text-sm font-medium outline-none transition-all duration-300 ${validationErrors.email ? "bg-red-50/20 border-red-500 text-red-600 focus:bg-white" : "bg-gray-50/50 border-gray-100 focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"}`} />
+                  {renderError("email")}
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -85,7 +132,7 @@ export default function ComplainPage() {
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-4">Complaint Type *</label>
                 <div className="relative">
-                  <select required value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
+                  <select value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
                     className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-2xl text-sm font-bold text-[#0B1221] outline-none focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all appearance-none">
                     <option>Product Defect or Quality</option>
                     <option>Delivery Delay or Problem</option>
@@ -100,10 +147,11 @@ export default function ComplainPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-4">Describe Your Issue *</label>
-                <textarea required rows={5} value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+                <label className={`text-[10px] font-black uppercase tracking-widest pl-4 transition-colors ${validationErrors.message ? "text-red-500" : "text-gray-400"}`}>Describe Your Issue *</label>
+                <textarea rows={5} value={form.message} onChange={(e) => handleInputChange("message", e.target.value)}
                   placeholder="Please describe what went wrong in detail..."
-                  className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-2xl text-sm font-medium outline-none focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all resize-none" />
+                  className={`w-full px-6 py-4 rounded-2xl text-sm font-medium outline-none transition-all duration-300 resize-none ${validationErrors.message ? "bg-red-50/20 border-red-500 text-red-600 focus:bg-white" : "bg-gray-50/50 border-gray-100 focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"}`} />
+                {renderError("message")}
               </div>
               <div className="pt-4">
                 <button type="submit" className="w-full md:w-auto md:px-14 bg-amber-500 text-white py-4 sm:py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-amber-600 transition-colors hover:shadow-xl hover:shadow-amber-500/20 mx-auto block max-w-sm">
