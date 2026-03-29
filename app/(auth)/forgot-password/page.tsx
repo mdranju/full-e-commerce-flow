@@ -7,11 +7,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { forgotPassword } from "@/src/store/slices/authSlice";
 import { RootState, AppDispatch } from "@/src/store/store";
 import { premiumToast as toast } from "@/components/ui/PremiumToast";
-import { ArrowLeft, Mail, Smartphone } from "lucide-react";
+import { ArrowLeft, Mail, Smartphone, AlertCircle } from "lucide-react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
+  const [validationError, setValidationError] = useState<string | null>(null);
+  
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const { isLoading } = useSelector((state: RootState) => state.auth);
@@ -20,9 +23,7 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
 
     if (!email) {
-      toast.warning("Email Required", {
-        description: "Please enter your email or phone number to continue.",
-      });
+      setValidationError("Field is required");
       return;
     }
 
@@ -32,8 +33,6 @@ export default function ForgotPasswordPage() {
         description:
           "A 6-digit verification code has been sent to your account.",
       });
-      // Pass email to verify-otp page via router state (modern Next.js handling usually uses URL params or global state, here we'll use state if possible or just assume email is in redux if needed)
-      // For simplicity in this flow, we'll use URL search params to pass the email/phone
       router.push(`/verify-otp?email=${encodeURIComponent(email)}`);
     } else {
       toast.error("Failed to Send OTP", {
@@ -42,6 +41,11 @@ export default function ForgotPasswordPage() {
           "Something went wrong. Please try again.",
       });
     }
+  };
+
+  const handleInputChange = (val: string) => {
+    setEmail(val);
+    if (validationError) setValidationError(null);
   };
 
   return (
@@ -74,21 +78,34 @@ export default function ForgotPasswordPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="group space-y-1.5">
-              <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest ml-4 group-focus-within:text-blue-600 transition-colors">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="group space-y-1.5 overflow-hidden">
+              <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationError ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
                 Email or Phone
               </label>
-              <div className="flex items-center bg-gray-50 border border-black/5 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5 transition-all duration-300">
+              <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationError ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
                 <input
                   type="text"
-                  placeholder="name@example.com"
+                  placeholder="name@example.com / 017XXXXXXXX"
                   className="w-full bg-transparent outline-none text-[#0B1221] text-sm placeholder:text-[#0B1221]/20 font-medium"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => handleInputChange(e.target.value)}
                   disabled={isLoading}
                 />
+                {validationError && <AlertCircle size={18} className="text-red-500" />}
               </div>
+              <AnimatePresence>
+                {validationError && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    className="text-red-500 text-[9px] font-bold uppercase tracking-widest ml-4 mt-1"
+                  >
+                    {validationError}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
 
             <button

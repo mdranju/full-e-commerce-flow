@@ -7,8 +7,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { register, clearError } from "@/src/store/slices/authSlice";
 import { RootState, AppDispatch } from "@/src/store/store";
 import { premiumToast as toast } from "@/components/ui/PremiumToast";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "motion/react";
+
+type ValidationErrors = {
+  name?: string;
+  email?: string;
+  phone?: string;
+  password?: string;
+  confirmPassword?: string;
+};
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -19,6 +28,7 @@ export default function SignupPage() {
     confirmPassword: "",
   });
 
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -42,32 +52,39 @@ export default function SignupPage() {
   }, [error, dispatch]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    
+    // Clear error for this field
+    if (validationErrors[name as keyof ValidationErrors]) {
+      setValidationErrors(prev => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const { name, email, phone, password, confirmPassword } = formData;
+    const errors: ValidationErrors = {};
 
-    if (!name || !email || !phone || !password || !confirmPassword) {
-      toast.warning("Empty Fields", {
-        description: "Please fill in all required fields.",
-      });
-      return;
+    if (!name) errors.name = "Full name is required";
+    if (!email) errors.email = "Email address is required";
+    if (!phone) errors.phone = "Phone number is required";
+    
+    if (!password) {
+      errors.password = "Password is required";
+    } else if (password.length < 6) {
+      errors.password = "Password must be at least 6 characters long";
     }
 
-    if (password !== confirmPassword) {
-      toast.error("Password Mismatch", {
-        description: "Passwords do not match. Please try again.",
-      });
-      return;
+    if (!confirmPassword) {
+      errors.confirmPassword = "Please confirm your password";
+    } else if (password !== confirmPassword) {
+      errors.confirmPassword = "Passwords do not match";
     }
 
-    if (password.length < 6) {
-      toast.warning("Weak Password", {
-        description: "Password must be at least 6 characters long.",
-      });
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
       return;
     }
 
@@ -79,6 +96,21 @@ export default function SignupPage() {
       router.push("/");
     }
   };
+
+  const renderError = (error?: string) => (
+    <AnimatePresence>
+      {error && (
+        <motion.p
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -5 }}
+          className="text-red-500 text-[9px] font-bold uppercase tracking-widest ml-4 mt-1"
+        >
+          {error}
+        </motion.p>
+      )}
+    </AnimatePresence>
+  );
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-20 relative overflow-hidden bg-[#F8FAFC]">
@@ -130,11 +162,11 @@ export default function SignupPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="group space-y-1.5 sm:col-span-2">
-                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest ml-4 group-focus-within:text-blue-600 transition-colors">
+              <div className="group space-y-1.5 sm:col-span-2 overflow-hidden">
+                <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.name ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
                   Full Name
                 </label>
-                <div className="flex items-center bg-gray-50 border border-black/5 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:bg-white transition-all duration-300">
+                <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.name ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
                   <input
                     type="text"
                     name="name"
@@ -144,14 +176,16 @@ export default function SignupPage() {
                     onChange={handleChange}
                     disabled={isLoading}
                   />
+                  {validationErrors.name && <AlertCircle size={18} className="text-red-500" />}
                 </div>
+                {renderError(validationErrors.name)}
               </div>
 
-              <div className="group space-y-1.5">
-                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest ml-4 group-focus-within:text-blue-600 transition-colors">
+              <div className="group space-y-1.5 overflow-hidden">
+                <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.phone ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
                   Mobile Number
                 </label>
-                <div className="flex items-center bg-gray-50 border border-black/5 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:bg-white transition-all duration-300">
+                <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.phone ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
                   <input
                     type="text"
                     name="phone"
@@ -161,14 +195,16 @@ export default function SignupPage() {
                     onChange={handleChange}
                     disabled={isLoading}
                   />
+                   {validationErrors.phone && <AlertCircle size={18} className="text-red-500" />}
                 </div>
+                {renderError(validationErrors.phone)}
               </div>
 
-              <div className="group space-y-1.5">
-                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest ml-4 group-focus-within:text-blue-600 transition-colors">
+              <div className="group space-y-1.5 overflow-hidden">
+                <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.email ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
                   Email Address
                 </label>
-                <div className="flex items-center bg-gray-50 border border-black/5 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:bg-white transition-all duration-300">
+                <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.email ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
                   <input
                     type="email"
                     name="email"
@@ -178,14 +214,16 @@ export default function SignupPage() {
                     onChange={handleChange}
                     disabled={isLoading}
                   />
+                   {validationErrors.email && <AlertCircle size={18} className="text-red-500" />}
                 </div>
+                {renderError(validationErrors.email)}
               </div>
 
-              <div className="group space-y-1.5">
-                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest ml-4 group-focus-within:text-blue-600 transition-colors">
+              <div className="group space-y-1.5 overflow-hidden">
+                <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.password ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
                   Password
                 </label>
-                <div className="flex items-center bg-gray-50 border border-black/5 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:bg-white transition-all duration-300">
+                <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.password ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
@@ -203,13 +241,14 @@ export default function SignupPage() {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                {renderError(validationErrors.password)}
               </div>
 
-              <div className="group space-y-1.5">
-                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest ml-4 group-focus-within:text-blue-600 transition-colors">
-                  Confirm Password
+              <div className="group space-y-1.5 overflow-hidden">
+                <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.confirmPassword ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+                   Confirm Password
                 </label>
-                <div className="flex items-center bg-gray-50 border border-black/5 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:bg-white transition-all duration-300">
+                <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.confirmPassword ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     name="confirmPassword"
@@ -227,6 +266,7 @@ export default function SignupPage() {
                     {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                {renderError(validationErrors.confirmPassword)}
               </div>
 
               <button

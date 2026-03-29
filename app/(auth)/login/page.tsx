@@ -7,13 +7,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { login, clearError } from "@/src/store/slices/authSlice";
 import { RootState, AppDispatch } from "@/src/store/store";
 import { premiumToast as toast } from "@/components/ui/PremiumToast";
-import { Eye, EyeOff, Smartphone } from "lucide-react";
+import { Eye, EyeOff, Smartphone, AlertCircle } from "lucide-react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState(""); // Email or Phone
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{ identifier?: string; password?: string }>({});
 
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
@@ -39,10 +41,12 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!identifier || !password) {
-      toast.warning("Incomplete Fields", {
-        description: "Please enter both your identifier and password.",
-      });
+    const errors: { identifier?: string; password?: string } = {};
+    if (!identifier) errors.identifier = "Identification is required";
+    if (!password) errors.password = "Password is required";
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
       return;
     }
 
@@ -52,6 +56,16 @@ export default function LoginPage() {
         description: "You have successfully logged into your account.",
       });
       router.push("/");
+    }
+  };
+
+  const handleInputChange = (field: "identifier" | "password", value: string) => {
+    if (field === "identifier") setIdentifier(value);
+    else setPassword(value);
+
+    // Clear specific error when user starts typing
+    if (validationErrors[field]) {
+      setValidationErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
@@ -116,26 +130,42 @@ export default function LoginPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="group space-y-1.5">
-                <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest ml-4 group-focus-within:text-blue-600 transition-colors">
-                  Mobile Number
+              <div className="group space-y-1.5 overflow-hidden">
+                <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.identifier ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+                  Mobile Number / Email
                 </label>
-                <div className="flex items-center bg-gray-50 border border-black/5 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5 transition-all duration-300">
+                <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.identifier ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
                   <input
                     type="text"
-                    placeholder="017XXXXXXXX"
+                    placeholder="017XXXXXXXX / name@example.com"
                     className="w-full bg-transparent outline-none text-[#0B1221] text-sm placeholder:text-[#0B1221]/20 font-medium"
                     value={identifier}
-                    onChange={(e) => setIdentifier(e.target.value)}
+                    onChange={(e) => handleInputChange("identifier", e.target.value)}
                     disabled={isLoading}
                   />
-                  <Smartphone size={18} className="text-black/10 group-focus-within:text-blue-600/30 transition-colors" />
+                  {validationErrors.identifier ? (
+                     <AlertCircle size={18} className="text-red-500 transition-colors" />
+                  ) : (
+                     <Smartphone size={18} className="text-black/10 group-focus-within:text-blue-600/30 transition-colors" />
+                  )}
                 </div>
+                <AnimatePresence>
+                  {validationErrors.identifier && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="text-red-500 text-[9px] font-bold uppercase tracking-widest ml-5 mt-1"
+                    >
+                      {validationErrors.identifier}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
               </div>
 
-              <div className="group space-y-1.5">
-                <div className="flex justify-between items-center ml-4">
-                  <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest group-focus-within:text-blue-600 transition-colors">
+              <div className="group space-y-1.5 overflow-hidden">
+                <div className="flex justify-between items-center px-4">
+                  <label className={`text-[10px] font-black uppercase tracking-widest transition-colors ${validationErrors.password ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
                     Password
                   </label>
                   <Link
@@ -145,13 +175,13 @@ export default function LoginPage() {
                     Forgot?
                   </Link>
                 </div>
-                <div className="flex items-center bg-gray-50 border border-black/5 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5 transition-all duration-300">
+                <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.password ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="******"
                     className="w-full bg-transparent outline-none text-[#0B1221] text-sm placeholder:text-[#0B1221]/20 font-medium tracking-widest"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => handleInputChange("password", e.target.value)}
                     disabled={isLoading}
                   />
                   <button
@@ -162,6 +192,18 @@ export default function LoginPage() {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                <AnimatePresence>
+                  {validationErrors.password && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="text-red-500 text-[9px] font-bold uppercase tracking-widest ml-5 mt-1"
+                    >
+                      {validationErrors.password}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
               </div>
 
               <button

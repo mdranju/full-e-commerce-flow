@@ -7,13 +7,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { resetPassword } from "@/src/store/slices/authSlice";
 import { RootState, AppDispatch } from "@/src/store/store";
 import { premiumToast as toast } from "@/components/ui/PremiumToast";
-import { Eye, EyeOff, ShieldCheck, ShieldAlert, Shield } from "lucide-react";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{ password?: string; confirmPassword?: string }>({});
 
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
@@ -35,24 +37,22 @@ export default function ResetPasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!password || !confirmPassword) {
-      toast.warning("Empty Fields", {
-        description: "Please fill in all fields.",
-      });
-      return;
+    const errors: { password?: string; confirmPassword?: string } = {};
+
+    if (!password) {
+      errors.password = "Password is required";
+    } else if (password.length < 6) {
+      errors.password = "Password must be at least 6 characters";
     }
 
-    if (password !== confirmPassword) {
-      toast.error("Password Mismatch", {
-        description: "New passwords do not match.",
-      });
-      return;
+    if (!confirmPassword) {
+      errors.confirmPassword = "Please confirm your password";
+    } else if (password !== confirmPassword) {
+      errors.confirmPassword = "Passwords do not match";
     }
 
-    if (password.length < 6) {
-      toast.warning("Weak Password", {
-        description: "Password must be at least 6 characters.",
-      });
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
       return;
     }
 
@@ -68,6 +68,30 @@ export default function ResetPasswordPage() {
         });
     }
   };
+
+  const handleInputChange = (field: "password" | "confirmPassword", val: string) => {
+    if (field === "password") setPassword(val);
+    else setConfirmPassword(val);
+
+    if (validationErrors[field]) {
+      setValidationErrors(prev => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const renderError = (error?: string) => (
+    <AnimatePresence>
+      {error && (
+        <motion.p
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -5 }}
+          className="text-red-500 text-[9px] font-bold uppercase tracking-widest ml-4 mt-1"
+        >
+          {error}
+        </motion.p>
+      )}
+    </AnimatePresence>
+  );
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-20 relative overflow-hidden bg-[#F8FAFC]">
@@ -90,18 +114,18 @@ export default function ResetPasswordPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="group space-y-1.5">
-              <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest ml-4 group-focus-within:text-blue-600 transition-colors">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="group space-y-1.5 overflow-hidden">
+               <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.password ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
                 New Password
               </label>
-              <div className="flex items-center bg-gray-50 border border-black/5 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5 transition-all duration-300">
+              <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.password ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="********"
                   className="w-full bg-transparent outline-none text-[#0B1221] text-sm placeholder:text-[#0B1221]/20 font-medium tracking-widest"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => handleInputChange("password", e.target.value)}
                   disabled={isLoading}
                 />
                 <button
@@ -112,6 +136,7 @@ export default function ResetPasswordPage() {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              {renderError(validationErrors.password)}
             </div>
 
             {/* Password Strength Indicator */}
@@ -130,17 +155,17 @@ export default function ResetPasswordPage() {
               </div>
             </div>
 
-            <div className="group space-y-1.5">
-              <label className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest ml-4 group-focus-within:text-blue-600 transition-colors">
+            <div className="group space-y-1.5 overflow-hidden">
+              <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.confirmPassword ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
                 Confirm Password
               </label>
-              <div className="flex items-center bg-gray-50 border border-black/5 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5 transition-all duration-300">
+              <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.confirmPassword ? "border-red-500 bg-red-50/20 shadow-xl shadow-red-500/5" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="********"
                   className="w-full bg-transparent outline-none text-[#0B1221] text-sm placeholder:text-[#0B1221]/20 font-medium tracking-widest"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
                   disabled={isLoading}
                 />
                 <button
@@ -151,6 +176,7 @@ export default function ResetPasswordPage() {
                   {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              {renderError(validationErrors.confirmPassword)}
             </div>
 
             <button

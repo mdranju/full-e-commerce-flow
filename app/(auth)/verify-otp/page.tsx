@@ -1,17 +1,19 @@
 "use client";
 
-import { useState, useRef, useEffect, use } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { verifyOtp, forgotPassword } from "@/src/store/slices/authSlice";
 import { RootState, AppDispatch } from "@/src/store/store";
 import { premiumToast as toast } from "@/components/ui/PremiumToast";
-import { ArrowLeft, RefreshCw } from "lucide-react";
+import { ArrowLeft, RefreshCw, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function VerifyOtpPage() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [timer, setTimer] = useState(60);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   
   const searchParams = useSearchParams();
@@ -45,12 +47,12 @@ export default function VerifyOtpPage() {
     newOtp[index] = value.substring(value.length - 1);
     setOtp(newOtp);
 
+    if (validationError) setValidationError(null);
+
     // Auto focus next or submit
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     } else if (value && index === 5) {
-        // Option 1: Trigger Verify On Last Digit
-        // Option 2: Wait for user click (user prefers auto-submit if possible)
         handleVerify(newOtp.join(""));
     }
   };
@@ -76,9 +78,7 @@ export default function VerifyOtpPage() {
   const handleVerify = async (otpString?: string) => {
     const finalOtp = otpString || otp.join("");
     if (finalOtp.length < 6) {
-      toast.warning("Incomplete OTP", {
-        description: "Please enter the full 6-digit code.",
-      });
+      setValidationError("Full 6-digit code required");
       return;
     }
 
@@ -87,7 +87,6 @@ export default function VerifyOtpPage() {
       toast.success("OTP Verified! ✅", {
         description: "You can now reset your password.",
       });
-      // Pass email and OTP to reset page
       router.push(`/reset-password?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(finalOtp)}`);
     } else {
         toast.error("Verification Failed", {
@@ -121,20 +120,35 @@ export default function VerifyOtpPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-6 gap-3 mb-12">
-            {otp.map((digit, idx) => (
-              <input
-                key={idx}
-                ref={(el) => { inputRefs.current[idx] = el; }}
-                type="text"
-                maxLength={1}
-                value={digit}
-                onChange={(e) => handleChange(e, idx)}
-                onKeyDown={(e) => handleKeyDown(e, idx)}
-                className="w-full aspect-square text-center text-xl font-black bg-gray-50 border border-black/5 rounded-2xl text-[#0B1221] focus:border-blue-500 focus:bg-white focus:shadow-[0_0_30px_rgba(59,130,246,0.1)] outline-none transition-all"
-                disabled={isLoading}
-              />
-            ))}
+          <div className="flex flex-col items-center mb-12">
+            <div className="grid grid-cols-6 gap-3 w-full">
+              {otp.map((digit, idx) => (
+                <input
+                  key={idx}
+                  ref={(el) => { inputRefs.current[idx] = el; }}
+                  type="text"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleChange(e, idx)}
+                  onKeyDown={(e) => handleKeyDown(e, idx)}
+                  className={`w-full aspect-square text-center text-xl font-black rounded-2xl outline-none transition-all ${validationError ? "bg-red-50/20 border-red-500 text-red-600 shadow-[0_0_20px_rgba(239,68,68,0.1)]" : "bg-gray-50 border border-black/5 text-[#0B1221] focus:border-blue-500 focus:bg-white focus:shadow-[0_0_30px_rgba(59,130,246,0.1)]"}`}
+                  disabled={isLoading}
+                />
+              ))}
+            </div>
+            <AnimatePresence>
+              {validationError && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="flex items-center gap-2 text-red-500 text-[10px] font-black uppercase tracking-widest mt-6"
+                >
+                  <AlertCircle size={14} />
+                  {validationError}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <button
