@@ -1,16 +1,19 @@
 "use client";
 
+import dynamic from "next/dynamic";
+import { BackButton } from "@/components/common/BackButton";
+import DescriptionTabs from "@/components/product/DescriptionTabs";
+import { ProductCard } from "@/components/product/ProductCard";
+import { premiumToast as toast } from "@/components/ui/PremiumToast";
 import { products } from "@/lib/data";
 import { addToCart } from "@/src/store/slices/cartSlice";
-import { ImageLightbox } from "@/components/product/ImageLightbox";
-import { ProductCard } from "@/components/product/ProductCard";
-import { BackButton } from "@/components/common/BackButton";
+import { ShieldCheck, Truck } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { premiumToast as toast } from "@/components/ui/PremiumToast";
-import { ShieldCheck, Truck, ArrowLeftRight, Clock } from "lucide-react";
+
+const ImageLightbox = dynamic(() => import("@/components/product/ImageLightbox").then(mod => mod.ImageLightbox), { ssr: false });
 
 export default function ProductDetail({
   params,
@@ -93,8 +96,31 @@ export default function ProductDetail({
       ? product.images
       : [product.image];
 
+  const productJsonLd = {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    name: product.name,
+    image: [product.image, ...images],
+    description: product.description,
+    brand: {
+      "@type": "Brand",
+      name: "Avlora Wear",
+    },
+    offers: {
+      "@type": "Offer",
+      url: `https://avlorawear.com/product/${product.slug}`,
+      priceCurrency: "BDT",
+      price: product.price,
+      availability: "https://schema.org/InStock",
+    },
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 lg:px-10 py-12 lg:py-20 bg-white/50 backdrop-blur-3xl min-h-screen">
+    <div className="max-w-7xl mx-auto px-4 lg:px-10 py-12 lg:py-0 bg-white/50 backdrop-blur-3xl min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       <div className="mb-8">
         <BackButton className="inline-flex items-center gap-2 text-[10px] font-black text-gray-400 hover:text-blue-600 transition-colors uppercase tracking-[0.4em]" />
       </div>
@@ -117,6 +143,7 @@ export default function ProductDetail({
               alt={product.name}
               fill
               priority
+              sizes="(max-width: 1024px) 100vw, 800px"
               className="object-contain lg:object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
@@ -140,12 +167,14 @@ export default function ProductDetail({
               <button
                 key={idx}
                 onClick={() => setSelectedImage(img)}
+                aria-label={`View product image ${idx + 1}`}
                 className={`relative w-24 aspect-square shrink-0 rounded-2xl lg:rounded-3xl overflow-hidden border-2 transition-all duration-500 ${selectedImage === img ? "border-blue-600 scale-105 shadow-xl shadow-blue-500/10" : "border-black/5 opacity-50 hover:opacity-100 hover:border-black/10"}`}
               >
                 <Image
                   src={img}
                   alt={`Thumbnail ${idx}`}
                   fill
+                  sizes="96px"
                   className="object-cover"
                 />
               </button>
@@ -220,6 +249,7 @@ export default function ProductDetail({
             <div className="flex items-center gap-2 p-1.5 bg-gray-100 rounded-3xl border border-black/5 w-fit">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                aria-label="Decrease quantity"
                 className="w-12 h-12 flex items-center justify-center text-lg font-black bg-white rounded-2xl hover:bg-[#0B1221] hover:text-white transition-all text-[#0B1221] shadow-sm active:scale-95"
               >
                 -
@@ -228,10 +258,12 @@ export default function ProductDetail({
                 type="number"
                 value={quantity}
                 readOnly
+                aria-label="Product quantity"
                 className="w-14 text-center bg-transparent focus:outline-none font-black text-[#0B1221] text-lg"
               />
               <button
                 onClick={() => setQuantity(quantity + 1)}
+                aria-label="Increase quantity"
                 className="w-12 h-12 flex items-center justify-center text-lg font-black bg-white rounded-2xl hover:bg-[#0B1221] hover:text-white transition-all text-[#0B1221] shadow-sm active:scale-95"
               >
                 +
@@ -293,84 +325,11 @@ export default function ProductDetail({
       </div>
 
       {/* Tabs */}
-      <div className="border-t border-gray-100 py-24">
-        <div className="flex justify-center gap-12 mb-16 relative">
-          <button
-            onClick={() => setActiveTab("description")}
-            className={`pb-4 text-xs font-black uppercase tracking-[0.3em] transition-all relative ${activeTab === "description" ? "text-blue-600 scale-105" : "text-gray-400 hover:text-gray-900"}`}
-          >
-            Description
-            {activeTab === "description" && (
-              <div className="absolute -bottom-1 left-0 w-full h-1 bg-blue-600 rounded-full"></div>
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("additional")}
-            className={`pb-4 text-xs font-black uppercase tracking-[0.3em] transition-all relative ${activeTab === "additional" ? "text-blue-600 scale-105" : "text-gray-400 hover:text-gray-900"}`}
-          >
-            Information
-            {activeTab === "additional" && (
-              <div className="absolute -bottom-1 left-0 w-full h-1 bg-blue-600 rounded-full"></div>
-            )}
-          </button>
-        </div>
-
-        {activeTab === "description" && (
-          <div className="max-w-4xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-              <div className="space-y-8">
-                <div>
-                  <p className="text-blue-600 text-[10px] font-black uppercase tracking-[0.5em] mb-4">
-                    Our Collection
-                  </p>
-                  <h2 className="text-3xl font-black text-gray-900 leading-none mb-6">
-                    Premium <br /> {product.name}
-                  </h2>
-                  <p className="text-gray-500 font-medium leading-loose text-base">
-                    ✨ This piece blends classic tradition with a modern,
-                    refined finish, making it perfect for both festive and
-                    formal occasions. Crafted with the modern believer in mind.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-8 py-8 border-y border-gray-100">
-                  <div>
-                    <h4 className="text-xs font-black uppercase tracking-widest text-[#0B1221] mb-2">
-                      Authentic
-                    </h4>
-                    <p className="text-sm font-bold text-gray-400">
-                      Original product
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-black uppercase tracking-widest text-[#0B1221] mb-2">
-                      Material
-                    </h4>
-                    <p className="text-sm font-bold text-gray-400">
-                      High quality fabric
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative aspect-[4/5] bg-gray-50 rounded-[3rem] overflow-hidden shadow-2xl shadow-blue-500/5 group">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  className="object-cover transition-transform duration-1000 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1221]/40 to-transparent" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="px-6 py-2.5 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full text-white text-[10px] font-black uppercase tracking-[0.4em]">
-                    Comfortable Fit
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      <DescriptionTabs
+        product={product}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
 
       {/* Image Lightbox — swipe, pinch-to-zoom, pan */}
       <ImageLightbox
