@@ -4,49 +4,78 @@ import {
   Instagram,
   Mail,
   MapPin,
-  Twitter,
   Youtube,
 } from "lucide-react";
+import { FaXTwitter } from "react-icons/fa6";
 import Link from "next/link";
+import Image from "next/image";
 
 export function Footer() {
   return (
-    <footer className="hidden lg:block relative bg-[#0B1221] text-white pt-32 pb-12 overflow-hidden">
+    <footer className="hidden lg:block relative bg-[#0B1221] text-white pt-20 pb-12 overflow-hidden">
       {/* 1. Cinematic Background Elements */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-blue-600/10 via-transparent to-transparent opacity-40" />
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-600/30 to-transparent" />
 
-      <div className="absolute -bottom-10 -left-8 text-[20rem] font-black text-white/[0.02] leading-none select-none pointer-events-none tracking-tighter">
+      <div className="absolute -bottom-10 -left-8 text-[20rem] font-black text-white/[0.03] leading-none select-none pointer-events-none tracking-tighter">
         AVLORA.
       </div>
 
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-20 mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-20 mb-10">
           {/* Column 1: The Sanctuary (Brand) */}
           <div className="space-y-10">
             <Link href="/" className="inline-block group">
-              <div className="relative w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-[#0B1221] font-black text-4xl transition-all duration-700 group-hover:scale-110 group-hover:rotate-6 shadow-2xl shadow-white/10">
+              {/* <div className="relative w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-[#0B1221] font-black text-4xl transition-all duration-700 group-hover:scale-110 group-hover:rotate-6 shadow-2xl shadow-white/10">
                 A
                 <div className="absolute -inset-2 bg-white/10 blur-xl rounded-full scale-0 group-hover:scale-100 transition-transform duration-700 -z-10" />
-              </div>
+              </div> */}
+              <Image
+                src="/white-logo.svg"
+                alt="Avlora Wear Logo"
+                width={100}
+                height={100}
+                className="w-full h-16 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"
+              />
             </Link>
-            <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] leading-relaxed max-w-[240px]">
+            <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.3em] leading-relaxed max-w-[240px]">
               Premium Luxury Apparel. <br />
               Established Excellence in <br />
               Dhaka, Bangladesh.
             </p>
             <div className="flex gap-4 pt-4">
               {[
-                { name: "Facebook", icon: Facebook, color: "hover:bg-blue-600" },
-                { name: "Youtube", icon: Youtube, color: "hover:bg-red-600" },
-                { name: "Instagram", icon: Instagram, color: "hover:bg-pink-600" },
-                { name: "Twitter", icon: Twitter, color: "hover:bg-sky-500" },
+                {
+                  name: "Facebook",
+                  icon: Facebook,
+                  color: "hover:bg-blue-600",
+                  href: "https://www.facebook.com/avlorawear",
+                },
+                {
+                  name: "Youtube",
+                  icon: Youtube,
+                  color: "hover:bg-red-600",
+                  href: "https://www.youtube.com/avlorawear",
+                },
+                {
+                  name: "Instagram",
+                  icon: Instagram,
+                  color: "hover:bg-pink-600",
+                  href: "https://www.instagram.com/avlorawear",
+                },
+                {
+                  name: "Twitter",
+                  icon: FaXTwitter,
+                  color: "hover:bg-sky-500",
+                  href: "https://www.x.com/avlorawear",
+                },
               ].map((social, i) => (
                 <a
                   key={i}
-                  href="#"
+                  href={social.href}
                   className={`w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-500 ${social.color} hover:scale-110 hover:-translate-y-1 hover:shadow-2xl`}
                   aria-label={`Follow Avlora Wear on ${social.name}`}
+                  target="_blank"
                 >
                   <social.icon size={18} strokeWidth={1.5} aria-hidden="true" />
                 </a>
@@ -70,7 +99,7 @@ export function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em] hover:text-white hover:tracking-[0.5em] transition-all duration-500 flex items-center gap-2 group"
+                    className="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] hover:text-white hover:tracking-[0.5em] transition-all duration-500 flex items-center gap-2 group"
                   >
                     {link.name}
                     <ArrowUpRight
@@ -100,7 +129,7 @@ export function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em] hover:text-white hover:tracking-[0.5em] transition-all duration-500 flex items-center gap-2 group"
+                    className="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] hover:text-white hover:tracking-[0.5em] transition-all duration-500 flex items-center gap-2 group"
                   >
                     {link.name}
                     <ArrowUpRight
@@ -146,7 +175,7 @@ export function Footer() {
                   <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 group-hover/link:bg-blue-600 group-hover/link:text-white transition-all duration-500">
                     <MapPin size={18} strokeWidth={1.5} />
                   </div>
-                  <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.3em] leading-loose group-hover/link:text-white transition-colors">
+                  <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.2em] leading-loose group-hover/link:text-white transition-colors">
                     Eastern Plaza, Hatirpool, <br />
                     Dhaka 1205, Bangladesh.
                   </p>
@@ -160,11 +189,11 @@ export function Footer() {
         <div className="pt-12 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-4">
             <div className="w-8 h-px bg-blue-600" />
-            <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.5em]">
+            <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.3em]">
               Secure Shopping
             </p>
           </div>
-          <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.4em]">
+          <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.3em]">
             &copy; {new Date().getFullYear()} AVLORA WEAR. ALL RIGHTS RESERVED.
           </p>
           <div className="flex gap-8">

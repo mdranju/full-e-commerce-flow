@@ -62,7 +62,7 @@ export const PremiumToast = ({
 
   return (
     <div
-      className={`relative group w-full sm:w-[350px] lg:w-[400px] flex items-start gap-4 p-4 rounded-[20px] bg-white text-[#0B1221] border ${styles.border} ${styles.glow} shadow-2xl transition-all duration-500`}
+      className={`relative group w-full sm:w-[350px] lg:w-[400px] flex items-start gap-4 p-4 rounded-[20px] bg-white/95 backdrop-blur-xl text-[#0B1221] border border-white/20 ${styles.border} ${styles.glow} shadow-2xl transition-all duration-500`}
     >
       <div
         className={`shrink-0 w-10 h-10 rounded-xl ${styles.bg} flex items-center justify-center`}

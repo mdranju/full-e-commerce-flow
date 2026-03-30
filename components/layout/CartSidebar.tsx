@@ -62,13 +62,13 @@ export function CartSidebar({
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           {cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
-              <div className="relative w-64 h-64 grayscale opacity-20 ">
+              <div className="relative w-64 h-64 grayscale opacity-40 ">
                 <Image
-                  src="https://images.unsplash.com/photo-1526632503813-6f479409d7bf?q=80&w=796&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  src="/empty-cart.png"
                   alt="Empty Collection"
-                  width={400}
-                  height={400}
-                  className="object-cover w-full h-full rounded-2xl "
+                  width={200}
+                  height={200}
+                  className="object-cover w-full h-full "
                 />
               </div>
               <div className="space-y-4">
@@ -108,11 +108,14 @@ export function CartSidebar({
                         <button
                           onClick={() => {
                             dispatch(
-                              removeFromCart({ id: item.id, size: item.size }),
+                              removeFromCart({
+                                id: item.id,
+                                size: item.size,
+                                color: item.color,
+                              }),
                             );
                             toast.info("Item Removed", {
-                              description:
-                                "The item has been removed from your cart.",
+                              description: `${item.name} has been removed from your cart.`,
                             });
                           }}
                           className="text-[#0B1221]/20 hover:text-red-500 transition-colors"
@@ -122,8 +125,16 @@ export function CartSidebar({
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="text-[10px] font-black uppercase tracking-widest text-blue-600/60">
-                          Size {item.size}
+                          {item.size}
                         </span>
+                        {item.color && (
+                          <>
+                            <div className="w-1 h-1 rounded-full bg-gray-200" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-[#0B1221]/40">
+                              {item.color}
+                            </span>
+                          </>
+                        )}
                         <div className="w-1 h-1 rounded-full bg-gray-200" />
                         <span className="text-[10px] font-black uppercase tracking-widest text-[#0B1221]/20">
                           Premium Fit
@@ -144,6 +155,7 @@ export function CartSidebar({
                               updateQuantity({
                                 id: item.id,
                                 size: item.size,
+                                color: item.color,
                                 quantity: Math.max(1, item.quantity - 1),
                               }),
                             )
@@ -161,6 +173,7 @@ export function CartSidebar({
                               updateQuantity({
                                 id: item.id,
                                 size: item.size,
+                                color: item.color,
                                 quantity: item.quantity + 1,
                               }),
                             )

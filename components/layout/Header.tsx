@@ -10,15 +10,26 @@ import dynamic from "next/dynamic";
 import { SearchBar } from "./SearchBar";
 import Image from "next/image";
 
-const MobileMenu = dynamic(() => import("./MobileMenu").then(mod => mod.MobileMenu), { ssr: false });
-const CartSidebar = dynamic(() => import("./CartSidebar").then(mod => mod.CartSidebar), { ssr: false });
-const SearchModal = dynamic(() => import("./SearchModal").then(mod => mod.SearchModal), { ssr: false });
+const MobileMenu = dynamic(
+  () => import("./MobileMenu").then((mod) => mod.MobileMenu),
+  { ssr: false },
+);
+const CartSidebar = dynamic(
+  () => import("./CartSidebar").then((mod) => mod.CartSidebar),
+  { ssr: false },
+);
+const SearchModal = dynamic(
+  () => import("./SearchModal").then((mod) => mod.SearchModal),
+  { ssr: false },
+);
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isBouncing, setIsBouncing] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const dispatch = useDispatch();
 
@@ -37,24 +48,53 @@ export function Header() {
     }
   }, [totalQuantity]);
 
-  // Desktop-only scroll glass effect
+  // Combined scroll logic: Desktop glass effect + Mobile smart hide/show
   useEffect(() => {
-    const onScroll = () => {
-      if (window.innerWidth >= 1024) setScrolled(window.scrollY > 60);
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const isMobile = window.innerWidth < 1024;
+
+      // Update glass theme effect
+      setScrolled(currentScrollY > 60);
+
+      // Smart hide/show for mobile only
+      if (isMobile) {
+        const delta = currentScrollY - lastScrollY;
+        const scrollThreshold = 10;
+
+        if (Math.abs(delta) > scrollThreshold) {
+          if (currentScrollY > lastScrollY && currentScrollY > 120) {
+            // Scrolling Down - Hide
+            setIsVisible(false);
+          } else {
+            // Scrolling Up - Show
+            setIsVisible(true);
+          }
+        }
+      } else {
+        setIsVisible(true); // Ensure visible on desktop resize
+      }
+
+      setLastScrollY(currentScrollY);
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
   const showGlass = scrolled || isSearchFocused;
 
   return (
     <>
       <header
-        className={`sticky top-0 z-50 w-full transition-all duration-700 ${showGlass ? "bg-white/70 backdrop-blur-3xl shadow-sm border-b border-white/20" : "bg-white border-b border-gray-100"}`}
+        className={`sticky top-0 z-50 w-full transition-all duration-500 ease-in-out ${
+          showGlass
+            ? "bg-white/70 backdrop-blur-lg shadow-md border-b border-white/20"
+            : "bg-white border-b border-gray-100"
+        } ${!isVisible ? "-translate-y-full" : "translate-y-0"}`}
       >
         <div
-          className={`transition-all duration-700 ${showGlass ? "py-3" : "py-6"}`}
+          className={`transition-all duration-700 ${showGlass ? "py-3" : "py-5"}`}
         >
           <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
             <div className="flex items-center justify-between gap-8">
@@ -73,23 +113,15 @@ export function Header() {
               </div>
 
               <Link href="/" className="flex items-center gap-3 shrink-0 group">
-                <div className="w-11 h-11 rounded-[14px] flex items-center justify-center text-white font-black text-2xl hover:shadow-xl shadow-black/10 group-hover:scale-105 transition-transform duration-500">
+                <div className=" rounded-[14px] flex items-center justify-center text-white font-black text-2xl  shadow-black/10 group-hover:scale-105 transition-transform duration-500">
                   <Image
-                    src="/logo.png"
+                    src="/logo.svg"
                     alt="Avlora Wear Logo"
-                    width={44}
-                    height={44}
+                    width={150}
+                    height={150}
                     priority
-                    className="w-full h-full object-cover"
+                    className="w-full lg:h-14 h-12 object-cover"
                   />
-                </div>
-                <div className="flex flex-col -gap-1">
-                  <span className="text-xl font-black tracking-tighter text-[#0B1221] leading-none">
-                    Avlora.
-                  </span>
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30 mt-0.5">
-                    Est. 2026
-                  </span>
                 </div>
               </Link>
 

@@ -58,23 +58,23 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             onClick={onClose}
             className="flex items-center gap-3 group"
           >
-            <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-xl shadow-blue-500/20 group-active:scale-90 transition-transform">
+            <div className="rounded-2xl flex items-center justify-center group-active:scale-90 transition-transform">
               <Image
-                src="/logo.png"
+                src="/white-logo.svg"
                 alt="Avlora Wear Logo"
                 width={40}
                 height={40}
-                className="w-full h-full object-cover"
+                className="w-full h-10 object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"
               />
             </div>
-            <div className="flex flex-col">
+            {/* <div className="flex flex-col">
               <span className="text-xl font-black tracking-tighter text-white leading-none">
                 AvloraWear.
               </span>
               <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 mt-0.5">
                 Est. 2026
               </span>
-            </div>
+            </div> */}
           </Link>
           <button
             onClick={onClose}
@@ -110,7 +110,11 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                       {hasSubcategories && (
                         <button
                           onClick={() => toggleCategory(category.slug)}
-                          aria-label={isExpanded ? `Collapse ${category.name}` : `Expand ${category.name}`}
+                          aria-label={
+                            isExpanded
+                              ? `Collapse ${category.name}`
+                              : `Expand ${category.name}`
+                          }
                           aria-expanded={isExpanded}
                           className={`p-3 mr-1 rounded-xl transition-all ${isExpanded ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "text-white/40 hover:text-white hover:bg-white/5"}`}
                         >

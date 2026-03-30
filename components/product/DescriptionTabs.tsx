@@ -44,9 +44,8 @@ function DescriptionTabs({
                   Premium <br /> {product.name}
                 </h2>
                 <p className="text-gray-500 font-medium leading-loose text-base">
-                  ✨ This piece blends classic tradition with a modern, refined
-                  finish, making it perfect for both festive and formal
-                  occasions. Crafted with the modern believer in mind.
+                  {product.description ||
+                    "✨ This piece blends classic tradition with a modern, refined finish, making it perfect for both festive and formal occasions. Crafted with the modern believer in mind."}
                 </p>
               </div>
 
@@ -56,35 +55,59 @@ function DescriptionTabs({
                     Authentic
                   </h4>
                   <p className="text-sm font-bold text-gray-400">
-                    Original product
+                    Original product from Avlora Wear
                   </p>
                 </div>
                 <div>
                   <h4 className="text-xs font-black uppercase tracking-widest text-[#0B1221] mb-2">
-                    Material
+                    Shipping
                   </h4>
                   <p className="text-sm font-bold text-gray-400">
-                    High quality fabric
+                    Worldwide tracking available
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="relative aspect-[4/4] bg-gray-50 rounded-[3rem] overflow-hidden shadow-2xl shadow-blue-500/5 group">
+            <div className="relative aspect-square bg-gray-50 rounded-[3rem] overflow-hidden shadow-2xl shadow-blue-500/5 group">
               <Image
                 src={product.image}
                 alt={product.name}
-                width={500}
-                height={500}
-                className="object-cover transition-transform duration-1000 group-hover:scale-105 w-full h-full"
+                fill
+                className="object-cover transition-transform duration-1000 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0B1221]/40 to-transparent" />
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute inset-x-0 bottom-10 flex items-center justify-center">
                 <span className="px-6 py-2.5 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full text-white text-[10px] font-black uppercase tracking-[0.4em]">
-                  Comfortable Fit
+                  Premium Fabric
                 </span>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "additional" && (
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12 p-10 rounded-[3rem] bg-gray-50/50 border border-gray-100">
+            {product.details?.map((detail: any, idx: number) => (
+              <div
+                key={idx}
+                className="flex items-center justify-between py-4 border-b border-gray-200/50 last:border-0"
+              >
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                  {detail.name}
+                </span>
+                <span className="text-xs font-bold text-[#0B1221] uppercase">
+                  {detail.value}
+                </span>
+              </div>
+            ))}
+            {(!product.details || product.details.length === 0) && (
+              <p className="col-span-full text-center text-gray-400 font-bold uppercase text-[10px] tracking-widest py-10">
+                No detailed specifications available.
+              </p>
+            )}
           </div>
         </div>
       )}
