@@ -4,10 +4,19 @@ import dynamic from "next/dynamic";
 import { DesktopAnimations } from "@/components/desktop/DesktopAnimations";
 import HeroBanner from "@/components/home/HeroBanner";
 
-const MarqueeTicker = dynamic(() => import("@/components/home/MarqueeTicker"), { ssr: true });
-const TopCategories = dynamic(() => import("@/components/home/TopCategories"), { ssr: true });
-const ProductItemsSection = dynamic(() => import("@/components/home/ProductItemsSection"), { ssr: true });
-const CTABanner = dynamic(() => import("@/components/home/CTABanner"), { ssr: true });
+const MarqueeTicker = dynamic(() => import("@/components/home/MarqueeTicker"), {
+  ssr: true,
+});
+const TopCategories = dynamic(() => import("@/components/home/TopCategories"), {
+  ssr: true,
+});
+const ProductItemsSection = dynamic(
+  () => import("@/components/home/ProductItemsSection"),
+  { ssr: true },
+);
+const CTABanner = dynamic(() => import("@/components/home/CTABanner"), {
+  ssr: true,
+});
 
 export default function Home() {
   return (
