@@ -1,15 +1,18 @@
 "use client";
 
-import { Search, User, ShoppingBag, Menu } from "lucide-react";
+import { Search, User, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/src/store/store";
 import { setCartOpen } from "@/src/store/slices/uiSlice";
-import { MobileMenu } from "./MobileMenu";
-import { CartSidebar } from "./CartSidebar";
+import dynamic from "next/dynamic";
 import { SearchBar } from "./SearchBar";
-import { SearchModal } from "./SearchModal";
+import Image from "next/image";
+
+const MobileMenu = dynamic(() => import("./MobileMenu").then(mod => mod.MobileMenu), { ssr: false });
+const CartSidebar = dynamic(() => import("./CartSidebar").then(mod => mod.CartSidebar), { ssr: false });
+const SearchModal = dynamic(() => import("./SearchModal").then(mod => mod.SearchModal), { ssr: false });
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -50,24 +53,6 @@ export function Header() {
       <header
         className={`sticky top-0 z-50 w-full transition-all duration-700 ${showGlass ? "bg-white/70 backdrop-blur-3xl shadow-sm border-b border-white/20" : "bg-white border-b border-gray-100"}`}
       >
-        {/* 1. Announcement Bar */}
-        <div className="bg-[#0B1221] text-white py-2.5 px-4 text-center overflow-hidden relative group hidden sm:block">
-          <div className="flex items-center justify-center gap-8 animate-infinite-scroll">
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] whitespace-nowrap opacity-80 group-hover:opacity-100 transition-opacity">
-              New Collection - Live Now.
-            </p>
-            <div className="w-1 h-1 rounded-full bg-blue-500" />
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] whitespace-nowrap opacity-80 group-hover:opacity-100 transition-opacity">
-              Free Delivery on Orders Over $150.
-            </p>
-            <div className="w-1 h-1 rounded-full bg-blue-500" />
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] whitespace-nowrap opacity-80 group-hover:opacity-100 transition-opacity">
-              Secure Shopping Active.
-            </p>
-          </div>
-          <div className="absolute inset-0 bg-blue-500/5 blur-3xl -z-10" />
-        </div>
-
         <div
           className={`transition-all duration-700 ${showGlass ? "py-3" : "py-6"}`}
         >
@@ -77,6 +62,7 @@ export function Header() {
                 <button
                   className="p-3.5 -ml-2 text-gray-900 bg-gray-50/80 backdrop-blur-xl border border-black/5 rounded-2xl hover:bg-white active:scale-95 transition-all duration-300"
                   onClick={() => setIsMenuOpen(true)}
+                  aria-label="Open navigation menu"
                 >
                   <div className="flex flex-col gap-1.5 items-start">
                     <div className="w-6 h-0.5 bg-[#0B1221] rounded-full" />
@@ -87,8 +73,15 @@ export function Header() {
               </div>
 
               <Link href="/" className="flex items-center gap-3 shrink-0 group">
-                <div className="w-11 h-11 bg-[#0B1221] rounded-[14px] flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-black/5 group-hover:scale-105 transition-transform duration-500">
-                  A
+                <div className="w-11 h-11 rounded-[14px] flex items-center justify-center text-white font-black text-2xl hover:shadow-xl shadow-black/10 group-hover:scale-105 transition-transform duration-500">
+                  <Image
+                    src="/logo.png"
+                    alt="Avlora Wear Logo"
+                    width={44}
+                    height={44}
+                    priority
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="flex flex-col -gap-1">
                   <span className="text-xl font-black tracking-tighter text-[#0B1221] leading-none">
@@ -134,6 +127,7 @@ export function Header() {
                 <button
                   onClick={() => dispatch(setCartOpen(true))}
                   className={`relative p-3 rounded-2xl bg-gray-50 border border-black/5 hover:bg-white hover:shadow-xl hover:shadow-black/5 transition-all duration-500 ${isBouncing ? "animate-cart-bounce" : ""}`}
+                  aria-label={`Open shopping cart. ${totalQuantity} items in cart.`}
                 >
                   <ShoppingBag
                     size={22}
@@ -148,6 +142,7 @@ export function Header() {
                 <button
                   className="lg:hidden p-3 text-[#0B1221] bg-gray-50 rounded-xl"
                   onClick={() => setIsSearchModalOpen(true)}
+                  aria-label="Open search modal"
                 >
                   <Search size={20} strokeWidth={1.5} />
                 </button>

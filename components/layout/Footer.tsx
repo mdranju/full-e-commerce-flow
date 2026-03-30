@@ -37,17 +37,18 @@ export function Footer() {
             </p>
             <div className="flex gap-4 pt-4">
               {[
-                { icon: Facebook, color: "hover:bg-blue-600" },
-                { icon: Youtube, color: "hover:bg-red-600" },
-                { icon: Instagram, color: "hover:bg-pink-600" },
-                { icon: Twitter, color: "hover:bg-sky-500" },
+                { name: "Facebook", icon: Facebook, color: "hover:bg-blue-600" },
+                { name: "Youtube", icon: Youtube, color: "hover:bg-red-600" },
+                { name: "Instagram", icon: Instagram, color: "hover:bg-pink-600" },
+                { name: "Twitter", icon: Twitter, color: "hover:bg-sky-500" },
               ].map((social, i) => (
                 <a
                   key={i}
                   href="#"
                   className={`w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-500 ${social.color} hover:scale-110 hover:-translate-y-1 hover:shadow-2xl`}
+                  aria-label={`Follow Avlora Wear on ${social.name}`}
                 >
-                  <social.icon size={18} strokeWidth={1.5} />
+                  <social.icon size={18} strokeWidth={1.5} aria-hidden="true" />
                 </a>
               ))}
             </div>
@@ -64,6 +65,7 @@ export function Footer() {
                 { name: "Track Order", href: "/track-order" },
                 { name: "Affiliate Program", href: "/affiliate" },
                 { name: "Complain Box", href: "/complain" },
+                { name: "Contact Us", href: "/contact" },
               ].map((link) => (
                 <li key={link.name}>
                   <Link
@@ -88,8 +90,9 @@ export function Footer() {
             </h3>
             <ul className="space-y-5">
               {[
-                { name: "Our Showrooms", href: "/store-locations" },
+                // { name: "Our Showrooms", href: "/store-locations" },
                 { name: "Refund Policy", href: "/refund" },
+                { name: "Our Story", href: "/our-story" },
                 { name: "About Us", href: "/about" },
                 { name: "Privacy Policy", href: "/privacy" },
                 { name: "Terms of Service", href: "/terms" },

@@ -25,14 +25,14 @@ export function CartSidebar({
       {/* 1. Immersive Atmospheric Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-[#0B1221]/40 backdrop-blur-md z-[60] transition-opacity duration-700 animate-in fade-in"
+          className="fixed inset-0 bg-[#0B1221]/50 backdrop-blur-md z-[60] transition-opacity duration-700 animate-in fade-in"
           onClick={onClose}
         />
       )}
 
       {/* 2. Premium Glass Sidebar */}
       <div
-        className={`fixed top-0 right-0 h-full w-[420px] max-w-[100vw] bg-white/90 backdrop-blur-3xl z-[70] transform transition-transform duration-700 ease-out flex flex-col shadow-[-20px_0_80px_rgba(0,0,0,0.15)] border-l border-white/20 ${
+        className={`fixed top-0 right-0 h-full w-[380px] lg:w-[420px] max-w-[100vw] bg-white/90 backdrop-blur-3xl z-[70] transform transition-transform duration-700 ease-out flex flex-col shadow-[-20px_0_80px_rgba(0,0,0,0.15)] border-l border-white/20 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -59,7 +59,7 @@ export function CartSidebar({
         </div>
 
         {/* Content: Immersive Item Grid */}
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           {cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
               <div className="relative w-64 h-64 grayscale opacity-20 ">
@@ -88,7 +88,7 @@ export function CartSidebar({
               {cartItems.map((item, index) => (
                 <div
                   key={`${item.id}-${item.size}`}
-                  className="group flex gap-6 p-5 bg-gray-50/50 rounded-[2rem] border border-black/5 hover:bg-white hover:shadow-2xl hover:shadow-black/5 transition-all duration-500 animate-in fade-in slide-in-from-right-8"
+                  className="group flex gap-6 p-4 bg-gray-50/50 rounded-[2rem] border border-black/5 hover:bg-white hover:shadow-2xl hover:shadow-black/5 transition-all duration-500 animate-in fade-in slide-in-from-right-8"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <div className="relative w-24 h-24 bg-gray-100 rounded-[1.5rem] overflow-hidden shrink-0 border border-black/5">
@@ -137,7 +137,7 @@ export function CartSidebar({
                       </p>
 
                       {/* Quantity Pill: High-Density Control */}
-                      <div className="flex items-center gap-4 bg-white border border-black/5 rounded-2xl px-3 py-1.5 shadow-sm">
+                      <div className="flex items-center gap-4 bg-white border border-black/5 rounded-2xl px-2 py-1.5 shadow-sm">
                         <button
                           onClick={() =>
                             dispatch(

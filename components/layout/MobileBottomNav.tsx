@@ -61,12 +61,15 @@ export function MobileBottomNav() {
               key={item.name}
               href={item.href}
               onClick={item.onClick}
+              aria-label={item.name === "Cart" ? `Open shopping cart. ${totalQuantity} items.` : `Navigate to ${item.name}`}
+              aria-current={item.isActive ? "page" : undefined}
               className={`relative flex flex-col items-center justify-center w-full h-full space-y-1.5 transition-all duration-500 scale-95 hover:scale-100 ${activeClass}`}
             >
               <div className="relative">
                 <Icon
                   size={20}
                   className={`transition-all duration-500 ${item.isActive ? "stroke-[2.5px] -translate-y-1" : "stroke-[1.5px]"}`}
+                  aria-hidden="true"
                 />
                 {item.badge !== null && item.badge !== undefined && (
                   <span className="absolute -top-1.5 -right-2.5 w-4 h-4 bg-blue-600 text-white text-[9px] font-black flex items-center justify-center rounded-full border border-white shadow-xl">

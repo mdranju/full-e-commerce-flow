@@ -1,4 +1,4 @@
-import { MapPin, Settings, Phone } from "lucide-react";
+import { MapPin } from "lucide-react";
 import Link from "next/link";
 
 export function TopBar() {
