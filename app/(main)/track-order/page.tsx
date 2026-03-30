@@ -6,7 +6,9 @@ import { AlertCircle } from "lucide-react";
 
 export default function TrackOrderPage() {
   const [form, setForm] = useState({ orderId: "", email: "" });
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
@@ -107,15 +109,26 @@ export default function TrackOrderPage() {
                 </p>
               </div>
 
-              <form className="space-y-10 relative z-10" noValidate onSubmit={(e) => { e.preventDefault(); handleTrack(); }}>
+              <form
+                className="space-y-10 relative z-10"
+                noValidate
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleTrack();
+                }}
+              >
                 <div className="group space-y-3">
-                  <label className={`text-[10px] font-black uppercase tracking-[0.4em] ml-4 transition-colors ${validationErrors.orderId ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+                  <label
+                    className={`text-[10px] font-black uppercase tracking-[0.4em] ml-4 transition-colors ${validationErrors.orderId ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                  >
                     Order ID *
                   </label>
                   <input
                     type="text"
                     value={form.orderId}
-                    onChange={(e) => handleInputChange("orderId", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("orderId", e.target.value)
+                    }
                     placeholder="Found in your confirmation email."
                     className={`w-full border rounded-[1.8rem] px-8 py-5 outline-none transition-all duration-500 placeholder:text-[#0B1221]/10 text-sm font-bold ${validationErrors.orderId ? "bg-red-50/20 border-red-500 text-red-600" : "bg-gray-50/50 border-black/5 text-[#0B1221] focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500/20"}`}
                   />
@@ -123,7 +136,9 @@ export default function TrackOrderPage() {
                 </div>
 
                 <div className="group space-y-3">
-                  <label className={`text-[10px] font-black uppercase tracking-[0.4em] ml-4 transition-colors ${validationErrors.email ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+                  <label
+                    className={`text-[10px] font-black uppercase tracking-[0.4em] ml-4 transition-colors ${validationErrors.email ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                  >
                     Email Address *
                   </label>
                   <input

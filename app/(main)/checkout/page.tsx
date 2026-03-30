@@ -593,18 +593,38 @@ export default function CheckoutPage() {
                           </p>
                           <div className="flex flex-wrap items-center gap-3">
                             <div className="flex items-center gap-1.5 bg-gray-50 p-1 rounded-xl border border-black/5">
-                              <button 
+                              <button
                                 type="button"
-                                onClick={() => dispatch(updateQuantity({ id: item.id, size: item.size, quantity: item.quantity - 1 }))}
+                                onClick={() =>
+                                  dispatch(
+                                    updateQuantity({
+                                      id: item.id,
+                                      size: item.size,
+                                      color: item.color,
+                                      quantity: item.quantity - 1,
+                                    }),
+                                  )
+                                }
                                 disabled={item.quantity <= 1}
                                 className="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-white hover:text-blue-600 transition-all text-[#0B1221]/30 disabled:opacity-30"
                               >
                                 <Minus size={10} strokeWidth={3} />
                               </button>
-                              <span className="text-[10px] font-black min-w-4 text-center text-[#0B1221]">{item.quantity}</span>
-                              <button 
+                              <span className="text-[10px] font-black min-w-4 text-center text-[#0B1221]">
+                                {item.quantity}
+                              </span>
+                              <button
                                 type="button"
-                                onClick={() => dispatch(updateQuantity({ id: item.id, size: item.size, quantity: item.quantity + 1 }))}
+                                onClick={() =>
+                                  dispatch(
+                                    updateQuantity({
+                                      id: item.id,
+                                      size: item.size,
+                                      color: item.color,
+                                      quantity: item.quantity + 1,
+                                    }),
+                                  )
+                                }
                                 className="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-white hover:text-blue-600 transition-all text-[#0B1221]/30"
                               >
                                 <Plus size={10} strokeWidth={3} />
@@ -612,19 +632,30 @@ export default function CheckoutPage() {
                             </div>
                             <div className="w-1 h-1 rounded-full bg-gray-300" />
                             <span className="text-[9px] font-black uppercase tracking-widest text-[#0B1221]/20">
-                              SZ: {item.size}
+                              {item.size} {item.color ? ` / ${item.color}` : ""}
                             </span>
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex flex-col items-end gap-2">
                         <span className="text-sm font-black text-[#0B1221] shrink-0 group-hover:text-blue-600 transition-colors">
                           ৳{item.price * item.quantity}
                         </span>
                         <button
                           type="button"
-                          onClick={() => dispatch(removeFromCart({ id: item.id, size: item.size }))}
+                          onClick={() => {
+                            dispatch(
+                              removeFromCart({
+                                id: item.id,
+                                size: item.size,
+                                color: item.color,
+                              }),
+                            );
+                            toast.info("Item Removed", {
+                              description: `${item.name} removed from your order.`,
+                            });
+                          }}
                           className="w-8 h-8 flex items-center justify-center rounded-xl bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-lg shadow-red-500/10"
                         >
                           <Trash2 size={13} strokeWidth={2.5} />

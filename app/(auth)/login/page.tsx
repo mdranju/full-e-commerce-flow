@@ -15,7 +15,10 @@ export default function LoginPage() {
   const [identifier, setIdentifier] = useState(""); // Email or Phone
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<{ identifier?: string; password?: string }>({});
+  const [validationErrors, setValidationErrors] = useState<{
+    identifier?: string;
+    password?: string;
+  }>({});
 
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
@@ -59,7 +62,10 @@ export default function LoginPage() {
     }
   };
 
-  const handleInputChange = (field: "identifier" | "password", value: string) => {
+  const handleInputChange = (
+    field: "identifier" | "password",
+    value: string,
+  ) => {
     if (field === "identifier") setIdentifier(value);
     else setPassword(value);
 
@@ -82,8 +88,8 @@ export default function LoginPage() {
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 rounded-[3rem] blur-xl opacity-25 group-hover:opacity-40 transition duration-1000"></div>
             <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-black/5 shadow-2xl">
               <Image
-                src="https://picsum.photos/seed/loginlight/800/1000"
-                alt="Avlora Wear Brand"
+                src="/login_3d_illustration_1774910430950.png"
+                alt="Avlora Wear Authentication"
                 fill
                 className="object-cover transition-transform duration-1000 group-hover:scale-105"
               />
@@ -131,22 +137,34 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="group space-y-1.5 overflow-hidden">
-                <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.identifier ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+                <label
+                  className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.identifier ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                >
                   Mobile Number / Email
                 </label>
-                <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.identifier ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
+                <div
+                  className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.identifier ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}
+                >
                   <input
                     type="text"
                     placeholder="017XXXXXXXX / name@example.com"
                     className="w-full bg-transparent outline-none text-[#0B1221] text-sm placeholder:text-[#0B1221]/20 font-medium"
                     value={identifier}
-                    onChange={(e) => handleInputChange("identifier", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("identifier", e.target.value)
+                    }
                     disabled={isLoading}
                   />
                   {validationErrors.identifier ? (
-                     <AlertCircle size={18} className="text-red-500 transition-colors" />
+                    <AlertCircle
+                      size={18}
+                      className="text-red-500 transition-colors"
+                    />
                   ) : (
-                     <Smartphone size={18} className="text-black/10 group-focus-within:text-blue-600/30 transition-colors" />
+                    <Smartphone
+                      size={18}
+                      className="text-black/10 group-focus-within:text-blue-600/30 transition-colors"
+                    />
                   )}
                 </div>
                 <AnimatePresence>
@@ -165,7 +183,9 @@ export default function LoginPage() {
 
               <div className="group space-y-1.5 overflow-hidden">
                 <div className="flex justify-between items-center px-4">
-                  <label className={`text-[10px] font-black uppercase tracking-widest transition-colors ${validationErrors.password ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+                  <label
+                    className={`text-[10px] font-black uppercase tracking-widest transition-colors ${validationErrors.password ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                  >
                     Password
                   </label>
                   <Link
@@ -175,13 +195,17 @@ export default function LoginPage() {
                     Forgot?
                   </Link>
                 </div>
-                <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.password ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
+                <div
+                  className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.password ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}
+                >
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="******"
                     className="w-full bg-transparent outline-none text-[#0B1221] text-sm placeholder:text-[#0B1221]/20 font-medium tracking-widest"
                     value={password}
-                    onChange={(e) => handleInputChange("password", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("password", e.target.value)
+                    }
                     disabled={isLoading}
                   />
                   <button

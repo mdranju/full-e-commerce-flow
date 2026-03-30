@@ -28,13 +28,17 @@ export default function SignupPage() {
     confirmPassword: "",
   });
 
-  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
+    {},
+  );
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const { isLoading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { isLoading, error, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth,
+  );
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -54,10 +58,10 @@ export default function SignupPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    
+
     // Clear error for this field
     if (validationErrors[name as keyof ValidationErrors]) {
-      setValidationErrors(prev => ({ ...prev, [name]: undefined }));
+      setValidationErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
 
@@ -70,7 +74,7 @@ export default function SignupPage() {
     if (!name) errors.name = "Full name is required";
     if (!email) errors.email = "Email address is required";
     if (!phone) errors.phone = "Phone number is required";
-    
+
     if (!password) {
       errors.password = "Password is required";
     } else if (password.length < 6) {
@@ -88,7 +92,9 @@ export default function SignupPage() {
       return;
     }
 
-    const resultAction = await dispatch(register({ name, email, phone, password }));
+    const resultAction = await dispatch(
+      register({ name, email, phone, password }),
+    );
     if (register.fulfilled.match(resultAction)) {
       toast.success("Account Created! ✅", {
         description: "Your account has been created successfully. Welcome!",
@@ -125,8 +131,8 @@ export default function SignupPage() {
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 rounded-[3rem] blur-xl opacity-25 group-hover:opacity-40 transition duration-1000"></div>
             <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-black/5 shadow-2xl">
               <Image
-                src="https://picsum.photos/seed/signuplight/800/1000"
-                alt="Avlora Wear Membership"
+                src="/signup_3d_illustration_1774910450679.png"
+                alt="Avlora Wear New Journey"
                 fill
                 className="object-cover transition-transform duration-1000 group-hover:scale-105"
               />
@@ -155,18 +161,28 @@ export default function SignupPage() {
               </h1>
               <p className="text-[#0B1221]/40 text-sm font-medium">
                 Already part of the community?{" "}
-                <Link href="/login" className="text-blue-600 hover:text-blue-700 font-bold underline-offset-4 hover:underline">
+                <Link
+                  href="/login"
+                  className="text-blue-600 hover:text-blue-700 font-bold underline-offset-4 hover:underline"
+                >
                   Sign In
                 </Link>
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <form
+              onSubmit={handleSubmit}
+              className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+            >
               <div className="group space-y-1.5 sm:col-span-2 overflow-hidden">
-                <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.name ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+                <label
+                  className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.name ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                >
                   Full Name
                 </label>
-                <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.name ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
+                <div
+                  className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.name ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}
+                >
                   <input
                     type="text"
                     name="name"
@@ -176,16 +192,22 @@ export default function SignupPage() {
                     onChange={handleChange}
                     disabled={isLoading}
                   />
-                  {validationErrors.name && <AlertCircle size={18} className="text-red-500" />}
+                  {validationErrors.name && (
+                    <AlertCircle size={18} className="text-red-500" />
+                  )}
                 </div>
                 {renderError(validationErrors.name)}
               </div>
 
               <div className="group space-y-1.5 overflow-hidden">
-                <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.phone ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+                <label
+                  className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.phone ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                >
                   Mobile Number
                 </label>
-                <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.phone ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
+                <div
+                  className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.phone ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}
+                >
                   <input
                     type="text"
                     name="phone"
@@ -195,16 +217,22 @@ export default function SignupPage() {
                     onChange={handleChange}
                     disabled={isLoading}
                   />
-                   {validationErrors.phone && <AlertCircle size={18} className="text-red-500" />}
+                  {validationErrors.phone && (
+                    <AlertCircle size={18} className="text-red-500" />
+                  )}
                 </div>
                 {renderError(validationErrors.phone)}
               </div>
 
               <div className="group space-y-1.5 overflow-hidden">
-                <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.email ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+                <label
+                  className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.email ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                >
                   Email Address
                 </label>
-                <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.email ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
+                <div
+                  className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.email ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}
+                >
                   <input
                     type="email"
                     name="email"
@@ -214,16 +242,22 @@ export default function SignupPage() {
                     onChange={handleChange}
                     disabled={isLoading}
                   />
-                   {validationErrors.email && <AlertCircle size={18} className="text-red-500" />}
+                  {validationErrors.email && (
+                    <AlertCircle size={18} className="text-red-500" />
+                  )}
                 </div>
                 {renderError(validationErrors.email)}
               </div>
 
               <div className="group space-y-1.5 overflow-hidden">
-                <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.password ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+                <label
+                  className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.password ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                >
                   Password
                 </label>
-                <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.password ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
+                <div
+                  className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.password ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}
+                >
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
@@ -245,10 +279,14 @@ export default function SignupPage() {
               </div>
 
               <div className="group space-y-1.5 overflow-hidden">
-                <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.confirmPassword ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
-                   Confirm Password
+                <label
+                  className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.confirmPassword ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                >
+                  Confirm Password
                 </label>
-                <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.confirmPassword ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
+                <div
+                  className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.confirmPassword ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}
+                >
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     name="confirmPassword"
@@ -263,7 +301,11 @@ export default function SignupPage() {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="text-black/10 hover:text-[#0B1221] transition-colors"
                   >
-                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showConfirmPassword ? (
+                      <EyeOff size={18} />
+                    ) : (
+                      <Eye size={18} />
+                    )}
                   </button>
                 </div>
                 {renderError(validationErrors.confirmPassword)}

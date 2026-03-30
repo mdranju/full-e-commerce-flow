@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-
-
 @theme {
   --font-sora: var(--font-sora);
   --font-dm-sans: var(--font-dm-sans);
