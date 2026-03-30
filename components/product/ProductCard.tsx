@@ -18,8 +18,9 @@ export function ProductCard({ product }: { product: any }) {
         <Image
           src={product.image}
           alt={product.name}
-          width={1000}
-          height={1000}
+          width={400}
+          height={400}
+          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -28,6 +29,7 @@ export function ProductCard({ product }: { product: any }) {
         <Link
           href={`/product/${product.slug}`}
           className="text-sm text-center font-semibold text-gray-800 hover:text-blue-600 transition-colors line-clamp-2 leading-snug "
+          aria-label={`View details for ${product.name}`}
         >
           {product.name}
         </Link>
@@ -44,6 +46,7 @@ export function ProductCard({ product }: { product: any }) {
         <Link
           href={`/product/${product.slug}`}
           className="w-full block text-center bg-[#0B1221] text-white text-xs font-bold py-3 rounded-xl hover:bg-blue-600 transition-all duration-300 cursor-pointer uppercase tracking-widest shadow-lg shadow-black/5 hover:shadow-blue-500/25"
+          aria-label={`View details for ${product.name}`}
         >
           View Details
         </Link>
