@@ -16,6 +16,31 @@ export const categories = [
   { id: "15", name: "Combo Offers", slug: "combo-offers" },
 ];
 
+export const heroSlides = [
+  {
+    id: 1,
+    image: "https://picsum.photos/seed/hero1/1920/900",
+    alt: "Eid Special Collection 1",
+  },
+  { id: 2, image: "/banner-ranju.jpg", alt: "Eid Special Collection 2" },
+  {
+    id: 3,
+    image: "https://picsum.photos/seed/hero3/1920/900",
+    alt: "Eid Special Collection 3",
+  },
+  {
+    id: 4,
+    image: "https://picsum.photos/seed/hero4/1920/900",
+    alt: "New Season 4",
+  },
+  {
+    id: 5,
+    image: "https://picsum.photos/seed/hero7/1920/900",
+    alt: "New Season 5",
+  },
+  { id: 6, image: "/banner.png", alt: "Avlora Wear Banner" },
+];
+
 export const products = [
   {
     id: "1",

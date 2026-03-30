@@ -13,7 +13,13 @@ import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
-const ImageLightbox = dynamic(() => import("@/components/product/ImageLightbox").then(mod => mod.ImageLightbox), { ssr: false });
+const ImageLightbox = dynamic(
+  () =>
+    import("@/components/product/ImageLightbox").then(
+      (mod) => mod.ImageLightbox,
+    ),
+  { ssr: false },
+);
 
 export default function ProductDetail({
   params,
@@ -108,7 +114,7 @@ export default function ProductDetail({
     },
     offers: {
       "@type": "Offer",
-      url: `https://avlorawear.com/product/${product.slug}`,
+      url: `avlorawear.vercel.app/product/${product.slug}`,
       priceCurrency: "BDT",
       price: product.price,
       availability: "https://schema.org/InStock",

@@ -12,31 +12,7 @@ import "swiper/css";
 import "swiper/css/effect-fade";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-
-const heroSlides = [
-  {
-    id: 1,
-    image: "https://picsum.photos/seed/hero1/1920/900",
-    alt: "Eid Special Collection 1",
-  },
-  { id: 2, image: "/banner-ranju.jpg", alt: "Eid Special Collection 2" },
-  {
-    id: 3,
-    image: "https://picsum.photos/seed/hero3/1920/900",
-    alt: "Eid Special Collection 3",
-  },
-  {
-    id: 4,
-    image: "https://picsum.photos/seed/hero4/1920/900",
-    alt: "New Season 4",
-  },
-  {
-    id: 5,
-    image: "https://picsum.photos/seed/hero7/1920/900",
-    alt: "New Season 5",
-  },
-  { id: 6, image: "/banner.jpg", alt: "Avlora Wear Banner" },
-];
+import { heroSlides } from "@/lib/data";
 
 function HeroBanner() {
   return (
@@ -67,7 +43,7 @@ function HeroBanner() {
             className="w-full h-full hero-swiper"
           >
             {/* Premium Navigation Arrows */}
-            <div 
+            <div
               className="swiper-button-prev-custom absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 lg:w-16 lg:h-16 flex items-center justify-center rounded-[1.5rem] bg-white/5 backdrop-blur-xl border border-white/10 !text-white cursor-pointer opacity-0 lg:group-hover:opacity-100 transition-all duration-700 hover:bg-white/20 hover:border-white/30 hover:scale-105 shadow-2xl after:content-none group/btn !m-0"
               aria-label="Previous slide"
               role="button"
@@ -77,7 +53,7 @@ function HeroBanner() {
                 className="group-hover/btn:-translate-x-1 transition-transform duration-300"
               />
             </div>
-            <div 
+            <div
               className="swiper-button-next-custom absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 lg:w-16 lg:h-16 flex items-center justify-center rounded-[1.5rem] bg-white/5 backdrop-blur-xl border border-white/10 !text-white cursor-pointer opacity-0 lg:group-hover:opacity-100 transition-all duration-700 hover:bg-white/20 hover:border-white/30 hover:scale-105 shadow-2xl after:content-none group/btn !m-0"
               aria-label="Next slide"
               role="button"

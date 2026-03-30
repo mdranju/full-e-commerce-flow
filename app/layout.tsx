@@ -31,18 +31,31 @@ export const metadata: Metadata = {
   title: "Avlora Wear - Premium Quality Apparel",
   description:
     "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
-  metadataBase: new URL("https://avlorawear.com"),
-  keywords: ["fashion", "apparel", "premium clothing", "Avlora Wear", "Dhaka fashion"],
+  metadataBase: new URL("https://avlorawear.vercel.app"),
+  keywords: [
+    "fashion",
+    "apparel",
+    "premium clothing",
+    "Avlora Wear",
+    "Dhaka fashion",
+  ],
   alternates: {
-    canonical: "/",
+    canonical: "https://avlorawear.vercel.app",
   },
   openGraph: {
     title: "Avlora Wear - Premium Quality Apparel",
     description:
       "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
-    url: "https://avlorawear.com",
+    url: "https://avlorawear.vercel.app",
     siteName: "Avlora Wear",
-    images: [{ url: "/banner.png", width: 1200, height: 630, alt: "Avlora Wear Banner" }],
+    images: [
+      {
+        url: "https://avlorawear.vercel.app/banner.png",
+        width: 1200,
+        height: 630,
+        alt: "Avlora Wear - Premium Fashion Banner",
+      },
+    ],
     locale: "en_US",
     type: "website",
   },
@@ -51,7 +64,8 @@ export const metadata: Metadata = {
     title: "Avlora Wear - Premium Quality Apparel",
     description:
       "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
-    images: ["/banner.png"],
+    images: ["https://avlorawear.vercel.app/banner.png"],
+    creator: "@avlorawear",
   },
   icons: {
     icon: "/logo.png",
@@ -68,8 +82,8 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Avlora Wear",
-    url: "https://avlorawear.com",
-    logo: "https://avlorawear.com/logo.png",
+    url: "https://avlorawear.vercel.app",
+    logo: "https://avlorawear.vercel.app/logo.png",
     sameAs: [
       "https://facebook.com/avlorawear",
       "https://instagram.com/avlorawear",
@@ -77,13 +91,16 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
+    <html lang="en" prefix="og: https://ogp.me/ns#">
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=5"
+        />
         <meta name="theme-color" content="#0B1221" />
       </head>
       <body
