@@ -1,37 +1,61 @@
 import { DesktopCursor } from "@/components/desktop/DesktopCursor";
+import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
-import { TopBar } from "@/components/layout/TopBar";
 import { PremiumToaster } from "@/components/ui/PremiumToast";
 import type { Metadata } from "next";
-import { Sora } from "next/font/google";
+import { Sora, DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
 
 const sora = Sora({
   subsets: ["latin"],
   variable: "--font-sora",
+  display: "swap",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "Avlora Wear - Premium Quality Apparel",
-  description: "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
+  description:
+    "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
   metadataBase: new URL("https://avlorawear.com"),
+  keywords: ["fashion", "apparel", "premium clothing", "Avlora Wear", "Dhaka fashion"],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Avlora Wear - Premium Quality Apparel",
-    description: "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
+    description:
+      "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
     url: "https://avlorawear.com",
     siteName: "Avlora Wear",
-    images: [{ url: "/banner.jpg", width: 1200, height: 630 }],
+    images: [{ url: "/banner.png", width: 1200, height: 630, alt: "Avlora Wear Banner" }],
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Avlora Wear - Premium Quality Apparel",
-    description: "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
-    images: ["/banner.jpg"],
+    description:
+      "Experience premium fashion with Avlora Wear. High-quality garments designed for style and comfort.",
+    images: ["/banner.png"],
+  },
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
   },
 };
 
@@ -40,18 +64,39 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Avlora Wear",
+    url: "https://avlorawear.com",
+    logo: "https://avlorawear.com/logo.png",
+    sameAs: [
+      "https://facebook.com/avlorawear",
+      "https://instagram.com/avlorawear",
+    ],
+  };
+
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        <meta name="theme-color" content="#0B1221" />
+      </head>
       <body
-        className={`${sora.className} min-h-screen flex flex-col`}
+        className={`${sora.variable} ${dmSans.variable} ${playfair.variable} ${sora.className} min-h-screen flex flex-col`}
         suppressHydrationWarning
       >
         <StoreProvider>
           {/* Desktop-only glowing cursor */}
           <DesktopCursor />
-          <TopBar />
+          {/* <TopBar /> */}
+          <AnnouncementBar />
           <Header />
-          <main className="flex-grow w-full pb-[65px] lg:pb-0">{children}</main>
+          <main className="flex-grow w-full pb-[20px] lg:pb-0">{children}</main>
           <Footer />
           <MobileBottomNav />
           <PremiumToaster />

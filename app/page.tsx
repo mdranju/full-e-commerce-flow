@@ -1,11 +1,13 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { DesktopAnimations } from "@/components/desktop/DesktopAnimations";
-import CTABanner from "@/components/home/CTABanner";
 import HeroBanner from "@/components/home/HeroBanner";
-import MarqueeTicker from "@/components/home/MarqueeTicker";
-import ProductItemsSection from "@/components/home/ProductItemsSection";
-import TopCategories from "@/components/home/TopCategories";
+
+const MarqueeTicker = dynamic(() => import("@/components/home/MarqueeTicker"), { ssr: true });
+const TopCategories = dynamic(() => import("@/components/home/TopCategories"), { ssr: true });
+const ProductItemsSection = dynamic(() => import("@/components/home/ProductItemsSection"), { ssr: true });
+const CTABanner = dynamic(() => import("@/components/home/CTABanner"), { ssr: true });
 
 export default function Home() {
   return (
