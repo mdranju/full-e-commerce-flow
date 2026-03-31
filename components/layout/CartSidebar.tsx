@@ -25,14 +25,14 @@ export function CartSidebar({
       {/* 1. Immersive Atmospheric Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-[#0B1221]/50 backdrop-blur-md z-[60] transition-opacity duration-700 animate-in fade-in"
+          className="fixed inset-0 bg-[#0B1221]/50 backdrop-blur-md z-[1000] transition-opacity duration-700 animate-in fade-in"
           onClick={onClose}
         />
       )}
 
       {/* 2. Premium Glass Sidebar */}
       <div
-        className={`fixed top-0 right-0 h-full w-[380px] lg:w-[420px] max-w-[100vw] bg-white/90 backdrop-blur-3xl z-[70] transform transition-transform duration-700 ease-out flex flex-col shadow-[-20px_0_80px_rgba(0,0,0,0.15)] border-l border-white/20 ${
+        className={`fixed top-0 right-0 h-full w-[380px] lg:w-[420px] max-w-[100vw] bg-white/90 backdrop-blur-3xl z-[1010] transform transition-transform duration-700 ease-out flex flex-col shadow-[-20px_0_80px_rgba(0,0,0,0.15)] border-l border-white/20 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

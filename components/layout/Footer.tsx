@@ -21,7 +21,7 @@ export function Footer() {
         AVLORA.
       </div>
 
-      <div className="max-w-[1440px] mx-auto px-6 lg:px-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-20 mb-10">
           {/* Column 1: The Sanctuary (Brand) */}
           <div className="space-y-10">

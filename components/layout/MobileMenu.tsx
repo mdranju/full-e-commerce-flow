@@ -1,6 +1,6 @@
 "use client";
 
-import { X, ChevronRight, ChevronDown } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { categories } from "@/lib/data";
@@ -23,31 +23,19 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     }));
   };
 
-  // Define subcategories for Panjabi as an example based on the screenshot
-  const panjabiSubcategories = [
-    { name: "Superior Panjabi", slug: "superior-panjabi" },
-    { name: "As-Shabab", slug: "as-shabab" },
-    { name: "Gracious Panjabi", slug: "gracious-panjabi" },
-    { name: "Semi Luxury", slug: "semi-luxury" },
-    { name: "chikankar", slug: "chikankar" },
-    { name: "Platinum", slug: "platinum" },
-    { name: "Elegent", slug: "elegent" },
-    { name: "Printed", slug: "printed" },
-  ];
-
   return (
     <>
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-50 transition-opacity lg:hidden"
+          className="fixed inset-0 bg-black/50 z-[1000] transition-opacity lg:hidden"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-full max-w-[320px] bg-[#0B1221] z-[100] transform transition-transform duration-700 ease-out flex flex-col lg:hidden shadow-2xl ${
+        className={`fixed top-0 left-0 h-full w-full max-w-[320px] bg-[#0B1221] z-[1010] transform transition-transform duration-700 ease-out flex flex-col lg:hidden shadow-2xl ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -67,14 +55,6 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 className="w-full h-10 object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"
               />
             </div>
-            {/* <div className="flex flex-col">
-              <span className="text-xl font-black tracking-tighter text-white leading-none">
-                AvloraWear.
-              </span>
-              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 mt-0.5">
-                Est. 2026
-              </span>
-            </div> */}
           </Link>
           <button
             onClick={onClose}
@@ -93,7 +73,8 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             </p>
             <ul className="space-y-1">
               {categories.map((category) => {
-                const hasSubcategories = category.slug === "panjabi";
+                const hasSubcategories =
+                  category.subcategories && category.subcategories.length > 0;
                 const isExpanded = expandedCategories[category.slug];
 
                 return (
@@ -102,7 +83,11 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                       <Link
                         href={`/products?category=${category.slug}`}
                         onClick={onClose}
-                        className={`flex-1 px-4 py-3.5 font-bold text-sm tracking-tight transition-colors ${isExpanded ? "text-blue-500" : "text-white/80 group-hover:text-white"}`}
+                        className={`flex-1 px-4 py-3.5 font-bold text-sm tracking-tight transition-colors ${
+                          isExpanded
+                            ? "text-blue-500"
+                            : "text-white/80 group-hover:text-white"
+                        }`}
                       >
                         {category.name}
                       </Link>
@@ -116,7 +101,11 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                               : `Expand ${category.name}`
                           }
                           aria-expanded={isExpanded}
-                          className={`p-3 mr-1 rounded-xl transition-all ${isExpanded ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "text-white/40 hover:text-white hover:bg-white/5"}`}
+                          className={`p-3 mr-1 rounded-xl transition-all ${
+                            isExpanded
+                              ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+                              : "text-white/40 hover:text-white hover:bg-white/5"
+                          }`}
                         >
                           <ChevronDown
                             size={14}
@@ -129,10 +118,10 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     {/* Seamless Subcategory Reveal */}
                     {hasSubcategories && isExpanded && (
                       <ul className="mt-2 ml-4 pl-4 border-l border-white/5 space-y-1 animate-in fade-in slide-in-from-left-4 duration-500">
-                        {panjabiSubcategories.map((sub) => (
+                        {category.subcategories?.map((sub) => (
                           <li key={sub.slug}>
                             <Link
-                              href={`/products?category=${sub.slug}`}
+                              href={`/products?category=${category.slug}&sub=${sub.slug}`}
                               onClick={onClose}
                               className="block px-4 py-2.5 text-xs font-bold text-white/60 hover:text-blue-400 transition-colors uppercase tracking-widest"
                             >
