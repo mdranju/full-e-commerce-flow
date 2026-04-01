@@ -34,7 +34,7 @@ export default function ProductsPage({
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]/50 pb-5 lg:pb-20 pt-10">
+    <div className="min-h-screen bg-[#f8fafc]/50 pb-20 pt-10">
       {/* 1. Discovery Hero */}
       <div className="relative h-[40vh] lg:h-[30vh] flex items-center justify-center overflow-hidden bg-[#0B1221] mb-12 lg:mb-20 hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-indigo-900/40 opacity-50" />
@@ -76,7 +76,7 @@ export default function ProductsPage({
         </div>
 
         {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-8 w-full">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 w-full">
             {filteredProducts.map((product, idx) => (
               <div
                 key={product.id}

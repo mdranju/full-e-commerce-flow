@@ -133,8 +133,9 @@ export default function SignupPage() {
               <Image
                 src="/signup.png"
                 alt="Avlora Wear New Journey"
-                fill
-                className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                width={1000}
+                height={1000}
+                className="object-cover transition-transform duration-1000 w-full h-full"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-white/40 via-transparent to-transparent" />
               <div className="absolute bottom-10 left-10 p-8">
