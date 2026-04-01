@@ -1,3 +1,4 @@
+import { BackButton } from "@/components/common/BackButton";
 import { ProductCard } from "@/components/product/ProductCard";
 import { products } from "@/lib/data";
 import Image from "next/image";
@@ -49,10 +50,11 @@ export default async function CategoryPage({
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 lg:px-0 py-20 lg:py-10">
+      <div className="max-w-7xl mx-auto px-4 lg:px-0 py-10 lg:py-10">
+        <BackButton className="inline-flex items-center gap-2 px-6 py-2.5 bg-white border border-black/5 rounded-full text-[10px] font-black uppercase tracking-widest text-[#0B1221]/40 hover:text-[#0B1221] transition-all hover:bg-gray-50/50 mb-5" />
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
           {/* 2. Side-Navigator: Category Filters */}
-          <aside className="w-full lg:w-80 shrink-0 lg:sticky lg:top-32 h-fit space-y-16">
+          <aside className="w-full lg:w-80 shrink-0 lg:sticky lg:top-32 h-fit space-y-16 lg:block hidden">
             <div>
               <div>
                 {" "}
@@ -151,7 +153,7 @@ export default async function CategoryPage({
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 lg:gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 lg:gap-5">
               {categoryProducts.map((product, idx) => (
                 <div
                   key={product.id}

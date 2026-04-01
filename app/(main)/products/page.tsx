@@ -34,9 +34,9 @@ export default function ProductsPage({
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]/50 pb-20 lg:pb-32">
+    <div className="min-h-screen bg-[#f8fafc]/50 pb-5 lg:pb-20 pt-10">
       {/* 1. Discovery Hero */}
-      <div className="relative h-[40vh] lg:h-[30vh] flex items-center justify-center overflow-hidden bg-[#0B1221] mb-12 lg:mb-20">
+      <div className="relative h-[40vh] lg:h-[30vh] flex items-center justify-center overflow-hidden bg-[#0B1221] mb-12 lg:mb-20 hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-indigo-900/40 opacity-50" />
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500/10 via-transparent to-transparent opacity-60" />
 

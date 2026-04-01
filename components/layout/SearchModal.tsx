@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, X, Clock } from "lucide-react";
+import { Search, X, Clock, ArrowLeft } from "lucide-react";
+import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -58,9 +59,9 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
     const term = searchQuery.trim();
     if (!term) return;
     
-    setRecentSearches((prev) => {
+    setRecentSearches((prev: string[]) => {
       // Remove if already exists to move to top
-      const filtered = prev.filter((s) => s.toLowerCase() !== term.toLowerCase());
+      const filtered = prev.filter((s: string) => s.toLowerCase() !== term.toLowerCase());
       const updated = [term, ...filtered].slice(0, 5); // Keep last 5
       localStorage.setItem("recentSearches", JSON.stringify(updated));
       return updated;
@@ -88,42 +89,46 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
         .slice(0, 5)
     : [];
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-[300] bg-white flex flex-col lg:hidden animate-in fade-in slide-in-from-top-4 duration-300">
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
+      transition={{ type: "spring", damping: 25, stiffness: 200 }}
+      className="fixed inset-0 z-[1001] bg-white flex flex-col lg:hidden"
+    >
       {/* Search Header */}
-      <div className="p-4 bg-white border-b border-gray-100 flex flex-col gap-4">
-        <div className="flex items-center gap-3">
-          <form onSubmit={handleSubmit} className="flex-1 relative group">
-            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none z-10">
-              <Search size={18} className="text-[#0B1221]/40 group-focus-within:text-blue-600 transition-colors" />
-            </div>
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="What are you looking for?"
-              className="w-full pl-12 pr-12 py-3.5 bg-gray-50 border border-black/5 rounded-[20px] focus:bg-white focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500/20 outline-none text-[15px] font-semibold text-[#0B1221] transition-all duration-300"
-            />
-            {query && (
-              <button
-                type="button"
-                onClick={clearSearchStr}
-                className="absolute right-4 inset-y-0 flex items-center p-1 text-[#0B1221]/20 hover:text-[#0B1221] transition-colors"
-              >
-                <X size={18} />
-              </button>
-            )}
-          </form>
-          <button
-            onClick={onClose}
-            className="text-[13px] font-black uppercase tracking-widest text-[#0B1221]/40 hover:text-[#0B1221] transition-colors"
-          >
-            Close
-          </button>
-        </div>
+      <div className="px-4 py-3 bg-white border-b border-black/[0.03] flex items-center gap-2">
+        <button
+          onClick={onClose}
+          className="p-2.5 text-[#0B1221] bg-gray-50 rounded-xl active:scale-90 transition-all border border-black/5"
+          aria-label="Go back"
+        >
+          <ArrowLeft size={20} strokeWidth={2} />
+        </button>
+
+        <form onSubmit={handleSubmit} className="flex-1 relative group">
+          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none z-10 transition-colors duration-300">
+            <Search size={18} className={`${query ? 'text-blue-600' : 'text-[#0B1221]/40'}`} />
+          </div>
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search products..."
+            className="w-full pl-11 pr-11 py-3 bg-gray-50 border border-black/5 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500/20 outline-none text-[15px] font-bold text-[#0B1221] transition-all duration-300"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={clearSearchStr}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 bg-black/5 rounded-full text-[#0B1221]/40 hover:text-[#0B1221] transition-colors"
+            >
+              <X size={14} />
+            </button>
+          )}
+        </form>
       </div>
 
       {/* Results / Discovery Area */}
@@ -146,7 +151,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {recentSearches.map((term, i) => (
+                  {recentSearches.map((term: string, i: number) => (
                     <button
                       key={i}
                       onClick={() => {
@@ -169,7 +174,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             <div className="space-y-4">
                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30 px-1">Suggested for you</h3>
                <div className="grid grid-cols-2 gap-3">
-                  {['New Arrivals', 'Best Sellers', 'Exclusive', 'On Sale'].map((cat) => (
+                  {['New Arrivals', 'Best Sellers', 'Exclusive', 'On Sale'].map((cat: string) => (
                     <Link
                       key={cat}
                       href={`/products?category=${cat.toLowerCase().replace(' ', '-')}`}
@@ -189,7 +194,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/30">Matches Found</h3>
             </div>
             <div className="space-y-2">
-              {suggestions.map((product) => (
+              {suggestions.map((product: any) => (
                 <Link
                   key={product.id}
                   href={`/product/${product.slug}`}
@@ -239,6 +244,6 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
