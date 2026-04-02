@@ -15,10 +15,10 @@ export default function VerifyOtpPage() {
   const [timer, setTimer] = useState(60);
   const [validationError, setValidationError] = useState<string | null>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  
+
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
-  
+
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const { isLoading } = useSelector((state: RootState) => state.auth);
@@ -39,7 +39,10 @@ export default function VerifyOtpPage() {
     return () => clearInterval(interval);
   }, [timer]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
     const value = e.target.value;
     if (isNaN(Number(value))) return;
 
@@ -53,11 +56,14 @@ export default function VerifyOtpPage() {
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     } else if (value && index === 5) {
-        handleVerify(newOtp.join(""));
+      handleVerify(newOtp.join(""));
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number,
+  ) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -65,7 +71,7 @@ export default function VerifyOtpPage() {
 
   const handleResend = async () => {
     if (timer > 0) return;
-    
+
     const resultAction = await dispatch(forgotPassword(email));
     if (forgotPassword.fulfilled.match(resultAction)) {
       setTimer(60);
@@ -87,25 +93,35 @@ export default function VerifyOtpPage() {
       toast.success("OTP Verified! ✅", {
         description: "You can now reset your password.",
       });
-      router.push(`/reset-password?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(finalOtp)}`);
+      router.push(
+        `/reset-password?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(finalOtp)}`,
+      );
     } else {
-        toast.error("Verification Failed", {
-            description: resultAction.payload as string || "Invalid or expired code.",
-        });
+      toast.error("Verification Failed", {
+        description:
+          (resultAction.payload as string) || "Invalid or expired code.",
+      });
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-20 relative overflow-hidden bg-[#F8FAFC]">
+    <div className="lg:min-h-screen flex items-center justify-center px-4 py-20 relative overflow-hidden bg-[#F8FAFC]">
       {/* Soft Ambient Glow Elements */}
       <div className="absolute top-0 right-0 w-[1000px] h-[700px] bg-blue-500/5 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-indigo-500/5 blur-[150px] rounded-full translate-y-1/2 -translate-x-1/4 pointer-events-none" />
-      
+
       <div className="w-full max-w-md relative z-10">
         <div className="bg-white p-10 md:p-12 rounded-[2.5rem] border border-black/5 shadow-[0_30px_100px_-20px_rgba(0,0,0,0.06)] backdrop-blur-3xl text-center">
           <div className="mb-10">
-            <Link href="/forgot-password" title="Back" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/40 hover:text-[#0B1221] mb-8 transition-colors group">
-              <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+            <Link
+              href="/forgot-password"
+              title="Back"
+              className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1221]/40 hover:text-[#0B1221] mb-8 transition-colors group"
+            >
+              <ArrowLeft
+                size={14}
+                className="group-hover:-translate-x-1 transition-transform"
+              />
               Go Back
             </Link>
             <p className="text-blue-600 text-[10px] font-black tracking-[0.4em] uppercase mb-4">
@@ -116,7 +132,9 @@ export default function VerifyOtpPage() {
             </h1>
             <p className="text-[#0B1221]/40 text-sm font-medium px-4 leading-relaxed">
               Enter the 6-digit code sent to <br />
-              <span className="text-[#0B1221] font-bold underline decoration-blue-600 underline-offset-4">{email || "your mobile"}</span>
+              <span className="text-[#0B1221] font-bold underline decoration-blue-600 underline-offset-4">
+                {email || "your mobile"}
+              </span>
             </p>
           </div>
 
@@ -125,7 +143,9 @@ export default function VerifyOtpPage() {
               {otp.map((digit, idx) => (
                 <input
                   key={idx}
-                  ref={(el) => { inputRefs.current[idx] = el; }}
+                  ref={(el) => {
+                    inputRefs.current[idx] = el;
+                  }}
                   type="text"
                   maxLength={1}
                   value={digit}
@@ -172,7 +192,10 @@ export default function VerifyOtpPage() {
               disabled={timer > 0 || isLoading}
               className={`flex items-center gap-3 font-black text-[10px] uppercase tracking-[0.2em] transition-all ${timer > 0 ? "text-black/10 cursor-not-allowed" : "text-blue-600 hover:text-blue-700 group"}`}
             >
-              <RefreshCw size={14} className={`${isLoading ? "animate-spin" : ""} group-hover:rotate-180 transition-transform duration-700`} />
+              <RefreshCw
+                size={14}
+                className={`${isLoading ? "animate-spin" : ""} group-hover:rotate-180 transition-transform duration-700`}
+              />
               Resend Code {timer > 0 && `(${timer}s)`}
             </button>
           </div>

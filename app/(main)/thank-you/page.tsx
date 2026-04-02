@@ -66,9 +66,9 @@ export default function ThankYouPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]/50 pb-20 lg:pb-32">
+    <div className="min-h-screen bg-[#f8fafc]/50 py-10">
       {/* 1. Cinematic Success Hero */}
-      <div className="relative h-[45vh] lg:h-[55vh] flex items-center justify-center overflow-hidden bg-[#0B1221] mb-12 lg:mb-20">
+      <div className="relative h-[45vh] lg:h-[55vh] flex items-center justify-center overflow-hidden bg-[#0B1221] mb-12 lg:mb-20 hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-green-600/20 to-indigo-900/40 opacity-50" />
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-green-500/10 via-transparent to-transparent opacity-60" />
 
@@ -121,16 +121,21 @@ export default function ThankYouPage() {
                 <p className="text-[#0B1221]/40 text-[9px] font-black uppercase tracking-[0.4em] mb-1">
                   Info
                 </p>
-                <h2 className="hero-display text-2xl tracking-tighter text-[#0B1221] uppercase">
+                <h2 className="hero-display text-xl lg:text-2xl tracking-tighter text-[#0B1221] uppercase">
                   Order Summary.
                 </h2>
               </div>
-              <div className="text-right">
-                <p className="text-[#0B1221]/40 text-[9px] font-black uppercase tracking-[0.4em] mb-1">
-                  Order Date
-                </p>
+              <div className="text-right flex flex-col">
+                <div>
+                  <p className="text-[#0B1221]/40 text-[9px] font-black uppercase tracking-[0.4em] mb-1">
+                    Order Date
+                  </p>
+                  <span className="text-sm font-black text-[#0B1221]">
+                    {new Date(order.date).toLocaleDateString()}
+                  </span>
+                </div>
                 <span className="text-sm font-black text-[#0B1221]">
-                  {new Date(order.date).toLocaleDateString()}
+                  ID: {order.orderId}
                 </span>
               </div>
             </div>

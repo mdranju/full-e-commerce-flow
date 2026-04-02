@@ -14,7 +14,7 @@ import { motion, AnimatePresence } from "motion/react";
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
-  
+
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const { isLoading } = useSelector((state: RootState) => state.auth);
@@ -49,7 +49,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-20 relative overflow-hidden bg-[#F8FAFC]">
+    <div className="flex items-center justify-center px-4 py-20 relative overflow-hidden bg-[#F8FAFC]">
       {/* Soft Ambient Glow Elements */}
       <div className="absolute top-0 right-0 w-[1000px] h-[700px] bg-blue-500/5 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-indigo-500/5 blur-[150px] rounded-full translate-y-1/2 -translate-x-1/4 pointer-events-none" />
@@ -80,10 +80,14 @@ export default function ForgotPasswordPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="group space-y-1.5 overflow-hidden">
-              <label className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationError ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}>
+              <label
+                className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationError ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+              >
                 Email or Phone
               </label>
-              <div className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationError ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}>
+              <div
+                className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationError ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}
+              >
                 <input
                   type="text"
                   placeholder="name@example.com / 017XXXXXXXX"
@@ -92,7 +96,9 @@ export default function ForgotPasswordPage() {
                   onChange={(e) => handleInputChange(e.target.value)}
                   disabled={isLoading}
                 />
-                {validationError && <AlertCircle size={18} className="text-red-500" />}
+                {validationError && (
+                  <AlertCircle size={18} className="text-red-500" />
+                )}
               </div>
               <AnimatePresence>
                 {validationError && (

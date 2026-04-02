@@ -8,6 +8,8 @@ import type { Metadata } from "next";
 import { Sora, DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
+import { FloatingWhatsAppButton } from "@/components/common/FloatingWhatsAppButton";
+import { BackToTopButton } from "@/components/common/BackToTopButton";
 
 const sora = Sora({
   subsets: ["latin"],
@@ -116,6 +118,8 @@ export default function RootLayout({
           <main className="flex-grow w-full pb-[20px] lg:pb-0">{children}</main>
           <Footer />
           <MobileBottomNav />
+          <FloatingWhatsAppButton />
+          <BackToTopButton />
           <PremiumToaster />
         </StoreProvider>
       </body>
