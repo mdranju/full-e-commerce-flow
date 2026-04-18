@@ -192,13 +192,13 @@ export const heroSlides = [
   {
     id: 6,
     image: "/banner/6.jpg",
-    alt: "Avlora Wear Banner",
+    alt: "Seivibe Banner",
     slug: "",
   },
   {
     id: 7,
     image: "/banner/7.jpg",
-    alt: "Avlora Wear Banner",
+    alt: "Seivibe Banner",
     slug: "",
   },
 ];
@@ -249,7 +249,7 @@ export const products = [
     description:
       "This is a premium quality panjabi made with the best materials. It is very comfortable to wear and looks great. It is perfect for any occasion.",
     details: [
-      { name: "Brand", value: "Avlora Wear" },
+      { name: "Brand", value: "Seivibe" },
       { name: "Collection", value: "As-Shabab" },
       { name: "Color", value: "Crimson Red" },
       { name: "Material", value: "Premium 100% Cotton" },
@@ -257,11 +257,11 @@ export const products = [
       { name: "Wash Care", value: "Cold Machine Wash Only" },
     ],
     sizes: [
-      { name: "S", inStock: true, stock: 15, sku: "AV-AS-RED-S" },
-      { name: "M", inStock: true, stock: 42, sku: "AV-AS-RED-M" },
-      { name: "L", inStock: true, stock: 0, sku: "AV-AS-RED-L" },
-      { name: "XL", inStock: true, stock: 28, sku: "AV-AS-RED-XL" },
-      { name: "XXL", inStock: true, stock: 5, sku: "AV-AS-RED-XXL" },
+      { name: "S", inStock: true, stock: 15, sku: "SF-AS-RED-S" },
+      { name: "M", inStock: true, stock: 42, sku: "SF-AS-RED-M" },
+      { name: "L", inStock: true, stock: 0, sku: "SF-AS-RED-L" },
+      { name: "XL", inStock: true, stock: 28, sku: "SF-AS-RED-XL" },
+      { name: "XXL", inStock: true, stock: 5, sku: "SF-AS-RED-XXL" },
     ],
     colors: [
       { name: "Ruby Red", value: "#A81D23" },

@@ -1,10 +1,20 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useMemo } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/src/store/store";
+import {
+  useGetAddressesQuery,
+  useCreateAddressMutation,
+  useUpdateAddressMutation,
+  useDeleteAddressMutation,
+  useSetDefaultAddressMutation,
+} from "@/src/store/api/userApi";
 
 export interface Address {
   id: string;
-  label: string; // e.g., "Home", "Office"
+  _id?: string;
+  label: string;
   firstName: string;
   lastName: string;
   street: string;
@@ -13,103 +23,59 @@ export interface Address {
   district: string;
   postalCode?: string;
   phone: string;
+  email?: string;
   isDefault: boolean;
 }
 
-const STORAGE_KEY = "believer_addresses";
-
-const defaultAddresses: Address[] = [
-  {
-    id: "addr-default-1",
-    label: "Home",
-    firstName: "Md.",
-    lastName: "Ranju",
-    street: "House 12, Road 4, Mohakhali",
-    apartment: "",
-    city: "Dhaka",
-    district: "Dhaka",
-    postalCode: "1212",
-    phone: "01799301290",
-    isDefault: true,
-  },
-];
-
 export function useAddresses() {
-  const [addresses, setAddresses] = useState<Address[]>([]);
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  
+  const { data: rawAddresses = [], isLoading, error: queryError, refetch } = useGetAddressesQuery(undefined, {
+    skip: !isAuthenticated,
+  });
 
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setAddresses(JSON.parse(stored));
-      } else {
-        setAddresses(defaultAddresses);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultAddresses));
-      }
-    } catch {
-      setAddresses(defaultAddresses);
-    }
-  }, []);
+  const [createAddress] = useCreateAddressMutation();
+  const [updateAddressMutation] = useUpdateAddressMutation();
+  const [deleteAddressMutation] = useDeleteAddressMutation();
+  const [setDefaultMutation] = useSetDefaultAddressMutation();
 
-  const persist = useCallback((updated: Address[]) => {
-    setAddresses(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  }, []);
+  const addresses: Address[] = useMemo(() => {
+    return rawAddresses.map((raw: any) => ({
+      ...raw,
+      id: raw._id ?? raw.id,
+    }));
+  }, [rawAddresses]);
 
-  const addAddress = useCallback(
-    (address: Omit<Address, "id">) => {
-      const newAddress: Address = {
-        ...address,
-        id: `addr-${Date.now()}`,
-      };
-      const updated = address.isDefault
-        ? [...addresses.map((a) => ({ ...a, isDefault: false })), newAddress]
-        : [...addresses, newAddress];
-      persist(updated);
-    },
-    [addresses, persist]
-  );
+  const defaultAddress = useMemo(() => {
+    return addresses.find((a) => a.isDefault) ?? addresses[0];
+  }, [addresses]);
 
-  const updateAddress = useCallback(
-    (id: string, data: Partial<Address>) => {
-      const updated = addresses.map((a) => {
-        if (a.id === id) return { ...a, ...data };
-        if (data.isDefault) return { ...a, isDefault: false };
-        return a;
-      });
-      persist(updated);
-    },
-    [addresses, persist]
-  );
+  const addAddress = async (data: Omit<Address, "id" | "_id">) => {
+    return await createAddress(data).unwrap();
+  };
 
-  const deleteAddress = useCallback(
-    (id: string) => {
-      const remaining = addresses.filter((a) => a.id !== id);
-      // If we deleted the default, make the first one default
-      if (
-        remaining.length > 0 &&
-        !remaining.some((a) => a.isDefault) &&
-        addresses.find((a) => a.id === id)?.isDefault
-      ) {
-        remaining[0].isDefault = true;
-      }
-      persist(remaining);
-    },
-    [addresses, persist]
-  );
+  const updateAddress = async (id: string, data: Partial<Address>) => {
+    return await updateAddressMutation({ id, data }).unwrap();
+  };
 
-  const setDefault = useCallback(
-    (id: string) => {
-      const updated = addresses.map((a) => ({
-        ...a,
-        isDefault: a.id === id,
-      }));
-      persist(updated);
-    },
-    [addresses, persist]
-  );
+  const deleteAddress = async (id: string) => {
+    return await deleteAddressMutation(id).unwrap();
+  };
 
-  const defaultAddress = addresses.find((a) => a.isDefault) ?? addresses[0];
+  const setDefault = async (id: string) => {
+    return await setDefaultMutation(id).unwrap();
+  };
 
-  return { addresses, addAddress, updateAddress, deleteAddress, setDefault, defaultAddress };
+  return {
+    addresses,
+    addAddress,
+    updateAddress,
+    deleteAddress,
+    setDefault,
+    defaultAddress,
+    isLoading,
+    error: (queryError as any)?.data?.message || null,
+    reload: refetch,
+  };
 }
+
