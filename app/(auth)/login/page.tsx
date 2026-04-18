@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { login, clearError } from "@/src/store/slices/authSlice";
+import { useLoginMutation } from "@/src/store/api/authApi";
+import { setCredentials, clearError } from "@/src/store/slices/authSlice";
 import { RootState, AppDispatch } from "@/src/store/store";
 import { premiumToast as toast } from "@/components/ui/PremiumToast";
 import { Eye, EyeOff, Smartphone, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
+import { SITE_CONFIG } from "@/src/config/site";
 
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState(""); // Email or Phone
@@ -22,24 +24,20 @@ export default function LoginPage() {
 
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const { isLoading, error, isAuthenticated } = useSelector(
+  const [login, { isLoading }] = useLoginMutation();
+  const { isAuthenticated } = useSelector(
     (state: RootState) => state.auth,
   );
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/");
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirect = searchParams.get("redirect") || "/profile";
+      router.push(redirect);
     }
   }, [isAuthenticated, router]);
 
-  useEffect(() => {
-    if (error) {
-      toast.error("Login Failed", {
-        description: error,
-      });
-      dispatch(clearError());
-    }
-  }, [error, dispatch]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,12 +51,20 @@ export default function LoginPage() {
       return;
     }
 
-    const resultAction = await dispatch(login({ identifier, password }));
-    if (login.fulfilled.match(resultAction)) {
+    try {
+      const result = await login({ identifier, password }).unwrap();
+      dispatch(setCredentials({ user: result.user, token: result.token }));
+      
       toast.success("Welcome Back! 👋", {
         description: "You have successfully logged into your account.",
       });
-      router.push("/");
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirect = searchParams.get("redirect") || "/profile";
+      router.push(redirect);
+    } catch (err: any) {
+      toast.error("Login Failed", {
+        description: err?.data?.message || "Invalid credentials",
+      });
     }
   };
 
@@ -89,7 +95,7 @@ export default function LoginPage() {
             <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-black/5 shadow-2xl">
               <Image
                 src="/login.png"
-                alt="Avlora Wear Authentication"
+                alt={`${SITE_CONFIG.name} Authentication`}
                 width={1000}
                 height={1000}
                 className="object-cover transition-transform duration-1000 w-full h-full"
@@ -100,7 +106,7 @@ export default function LoginPage() {
                   User Login
                 </p>
                 <h2 className="hero-display text-[#0B1221] text-5xl mb-2">
-                  Welcome to <br /> Avlora Wear.
+                  Welcome to <br /> {SITE_CONFIG.name}.
                 </h2>
               </div>
             </div>

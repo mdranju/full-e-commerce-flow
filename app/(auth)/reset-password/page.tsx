@@ -4,8 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { resetPassword } from "@/src/store/slices/authSlice";
-import { RootState, AppDispatch } from "@/src/store/store";
+import { useResetPasswordMutation } from "@/src/store/api/authApi";
 import { premiumToast as toast } from "@/components/ui/PremiumToast";
 import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -24,9 +23,8 @@ export default function ResetPasswordPage() {
   const email = searchParams.get("email") || "";
   const otp = searchParams.get("otp") || "";
 
-  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const { isLoading } = useSelector((state: RootState) => state.auth);
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
   const strength = useMemo(() => {
     if (!password) return { label: "", color: "bg-gray-200", percent: 0 };
@@ -64,19 +62,15 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    const resultAction = await dispatch(
-      resetPassword({ email, otp, newPassword: password }),
-    );
-    if (resetPassword.fulfilled.match(resultAction)) {
+    try {
+      await resetPassword({ email, otp, newPassword: password }).unwrap();
       toast.success("Password Reset Successfully! ✅", {
         description: "You can now login with your new password.",
       });
       router.push("/login");
-    } else {
+    } catch (err: any) {
       toast.error("Reset Failed", {
-        description:
-          (resultAction.payload as string) ||
-          "Something went wrong. Please try again.",
+        description: err?.data?.message || "Something went wrong. Please try again.",
       });
     }
   };

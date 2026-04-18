@@ -4,8 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { verifyOtp, forgotPassword } from "@/src/store/slices/authSlice";
-import { RootState, AppDispatch } from "@/src/store/store";
+import { useVerifyEmailMutation, useForgotPasswordMutation } from "@/src/store/api/authApi";
 import { premiumToast as toast } from "@/components/ui/PremiumToast";
 import { ArrowLeft, RefreshCw, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -19,15 +18,10 @@ export default function VerifyOtpPage() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
 
-  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const { isLoading } = useSelector((state: RootState) => state.auth);
-
-  useEffect(() => {
-    if (!email) {
-      router.push("/forgot-password");
-    }
-  }, [email, router]);
+  const [verifyEmail, { isLoading: isVerifying }] = useVerifyEmailMutation();
+  const [forgotPassword, { isLoading: isResending }] = useForgotPasswordMutation();
+  const isLoading = isVerifying || isResending;
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -72,11 +66,15 @@ export default function VerifyOtpPage() {
   const handleResend = async () => {
     if (timer > 0) return;
 
-    const resultAction = await dispatch(forgotPassword(email));
-    if (forgotPassword.fulfilled.match(resultAction)) {
+    try {
+      await forgotPassword(email).unwrap();
       setTimer(60);
       toast.success("OTP Resent", {
         description: "A new 6-digit code has been sent to your email/phone.",
+      });
+    } catch (err: any) {
+      toast.error("Failed to Resend", {
+        description: err?.data?.message || "Please try again later.",
       });
     }
   };
@@ -88,18 +86,17 @@ export default function VerifyOtpPage() {
       return;
     }
 
-    const resultAction = await dispatch(verifyOtp({ email, otp: finalOtp }));
-    if (verifyOtp.fulfilled.match(resultAction)) {
+    try {
+      await verifyEmail({ email, otp: finalOtp }).unwrap();
       toast.success("OTP Verified! ✅", {
         description: "You can now reset your password.",
       });
       router.push(
         `/reset-password?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(finalOtp)}`,
       );
-    } else {
+    } catch (err: any) {
       toast.error("Verification Failed", {
-        description:
-          (resultAction.payload as string) || "Invalid or expired code.",
+        description: err?.data?.message || "Invalid or expired code.",
       });
     }
   };

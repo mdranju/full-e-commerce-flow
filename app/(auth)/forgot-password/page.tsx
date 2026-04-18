@@ -3,9 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { forgotPassword } from "@/src/store/slices/authSlice";
-import { RootState, AppDispatch } from "@/src/store/store";
+import { useForgotPasswordMutation } from "@/src/store/api/authApi";
 import { premiumToast as toast } from "@/components/ui/PremiumToast";
 import { ArrowLeft, Mail, Smartphone, AlertCircle } from "lucide-react";
 import Image from "next/image";
@@ -15,9 +13,8 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const { isLoading } = useSelector((state: RootState) => state.auth);
+  const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,18 +24,16 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    const resultAction = await dispatch(forgotPassword(email));
-    if (forgotPassword.fulfilled.match(resultAction)) {
+    try {
+      await forgotPassword(email).unwrap();
       toast.success("OTP Sent! 📧", {
         description:
           "A 6-digit verification code has been sent to your account.",
       });
       router.push(`/verify-otp?email=${encodeURIComponent(email)}`);
-    } else {
+    } catch (err: any) {
       toast.error("Failed to Send OTP", {
-        description:
-          (resultAction.payload as string) ||
-          "Something went wrong. Please try again.",
+        description: err?.data?.message || "Something went wrong. Please try again.",
       });
     }
   };

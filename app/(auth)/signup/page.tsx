@@ -4,17 +4,19 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { register, clearError } from "@/src/store/slices/authSlice";
+import { useRegisterMutation } from "@/src/store/api/authApi";
+import { setCredentials, clearError } from "@/src/store/slices/authSlice";
 import { RootState, AppDispatch } from "@/src/store/store";
 import { premiumToast as toast } from "@/components/ui/PremiumToast";
 import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
+import { SITE_CONFIG } from "@/src/config/site";
 
 type ValidationErrors = {
   name?: string;
   email?: string;
-  phone?: string;
+  contact?: string;
   password?: string;
   confirmPassword?: string;
 };
@@ -23,7 +25,7 @@ export default function SignupPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",
+    contact: "",
     password: "",
     confirmPassword: "",
   });
@@ -36,24 +38,20 @@ export default function SignupPage() {
 
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const { isLoading, error, isAuthenticated } = useSelector(
+  const [register, { isLoading }] = useRegisterMutation();
+  const { isAuthenticated } = useSelector(
     (state: RootState) => state.auth,
   );
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/");
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirect = searchParams.get("redirect") || "/profile";
+      router.push(redirect);
     }
   }, [isAuthenticated, router]);
 
-  useEffect(() => {
-    if (error) {
-      toast.error("Registration Failed", {
-        description: error,
-      });
-      dispatch(clearError());
-    }
-  }, [error, dispatch]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -68,12 +66,12 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { name, email, phone, password, confirmPassword } = formData;
+    const { name, email, contact, password, confirmPassword } = formData;
     const errors: ValidationErrors = {};
 
     if (!name) errors.name = "Full name is required";
     if (!email) errors.email = "Email address is required";
-    if (!phone) errors.phone = "Phone number is required";
+    if (!contact) errors.contact = "contact number is required";
 
     if (!password) {
       errors.password = "Password is required";
@@ -92,14 +90,20 @@ export default function SignupPage() {
       return;
     }
 
-    const resultAction = await dispatch(
-      register({ name, email, phone, password }),
-    );
-    if (register.fulfilled.match(resultAction)) {
+    try {
+      const result = await register({ name, email, contact, password }).unwrap();
+      dispatch(setCredentials({ user: result.user, token: result.token }));
+
       toast.success("Account Created! ✅", {
         description: "Your account has been created successfully. Welcome!",
       });
-      router.push("/");
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirect = searchParams.get("redirect") || "/profile";
+      router.push(redirect);
+    } catch (err: any) {
+      toast.error("Registration Failed", {
+        description: err?.data?.message || "Something went wrong",
+      });
     }
   };
 
@@ -132,7 +136,7 @@ export default function SignupPage() {
             <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-black/5 shadow-2xl">
               <Image
                 src="/signup.png"
-                alt="Avlora Wear New Journey"
+                alt={`${SITE_CONFIG.name} New Journey`}
                 width={1000}
                 height={1000}
                 className="object-cover transition-transform duration-1000 w-full h-full"
@@ -143,7 +147,7 @@ export default function SignupPage() {
                   Join Us
                 </p>
                 <h2 className="hero-display text-[#0B1221] text-5xl mb-2">
-                  Join <br /> Avlora Wear.
+                  Join <br /> {SITE_CONFIG.name}.
                 </h2>
               </div>
             </div>
@@ -202,27 +206,27 @@ export default function SignupPage() {
 
               <div className="group space-y-1.5 overflow-hidden">
                 <label
-                  className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.phone ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
+                  className={`text-[10px] font-black uppercase tracking-widest ml-4 transition-colors ${validationErrors.contact ? "text-red-500" : "text-[#0B1221]/40 group-focus-within:text-blue-600"}`}
                 >
                   Mobile Number
                 </label>
                 <div
-                  className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.phone ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}
+                  className={`flex items-center bg-gray-50 border rounded-2xl px-5 py-4 transition-all duration-300 ${validationErrors.contact ? "border-red-500 bg-red-50/20" : "border-black/5 focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-xl focus-within:shadow-blue-500/5"}`}
                 >
                   <input
                     type="text"
-                    name="phone"
+                    name="contact"
                     placeholder="017XXXXXXXX"
                     className="w-full bg-transparent outline-none text-[#0B1221] text-sm placeholder:text-[#0B1221]/20 font-medium"
-                    value={formData.phone}
+                    value={formData.contact}
                     onChange={handleChange}
                     disabled={isLoading}
                   />
-                  {validationErrors.phone && (
+                  {validationErrors.contact && (
                     <AlertCircle size={18} className="text-red-500" />
                   )}
                 </div>
-                {renderError(validationErrors.phone)}
+                {renderError(validationErrors.contact)}
               </div>
 
               <div className="group space-y-1.5 overflow-hidden">
