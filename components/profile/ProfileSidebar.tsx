@@ -2,14 +2,27 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User, ShoppingBag, Lock, LogOut, Settings, MapPin } from 'lucide-react';
+import { User, ShoppingBag, Lock, LogOut, Settings, MapPin, Heart } from 'lucide-react';
+
+import { logout } from "@/src/store/slices/authSlice";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 
 export function ProfileSidebar() {
   const pathname = usePathname();
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const handleLogout = (e: React.MouseEvent) => {
+    e.preventDefault();
+    dispatch(logout());
+    router.push("/");
+  };
 
   const navItems = [
     { name: 'Profile', href: '/profile', icon: User },
     { name: 'My Orders', href: '/profile/orders', icon: ShoppingBag },
+    { name: 'Wishlist', href: '/wishlist', icon: Heart },
     { name: 'Addresses', href: '/profile/addresses', icon: MapPin },
     { name: 'Change Password', href: '/profile/password', icon: Lock },
     { name: 'Settings', href: '/profile/settings', icon: Settings, mobileOnly: true },
@@ -34,13 +47,14 @@ export function ProfileSidebar() {
             const isActive = pathname === item.href;
             
             return (
-              <li key={item.name} className={item.mobileOnly ? 'lg:hidden' : ''}>
+              <li key={item.name} className={('mobileOnly' in item && item.mobileOnly) ? 'lg:hidden' : ''}>
                 <Link 
                   href={item.href}
+                  onClick={item.isDanger ? handleLogout : undefined}
                   className={`flex items-center justify-between px-6 py-4.5 rounded-[1.5rem] transition-all duration-500 group ${
                     isActive 
                       ? 'text-blue-600 bg-white shadow-xl shadow-blue-500/5 ring-8 ring-blue-500/5' 
-                      : item.isDanger 
+                      : ('isDanger' in item && item.isDanger) 
                         ? 'text-red-500 hover:bg-red-50'
                         : 'text-[#0B1221]/40 hover:text-[#0B1221] hover:bg-gray-50/50'
                   }`}

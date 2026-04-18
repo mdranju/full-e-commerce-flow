@@ -1,5 +1,6 @@
 "use client";
 
+import { resolveImageUrl } from "@/src/utils/image";
 import { Calendar, CheckCircle2, CreditCard, MapPin, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect } from "react";
@@ -29,11 +30,19 @@ export function OrderDetailModal({
 
   if (!isOpen || !order) return null;
 
-  const statuses = ["Pending", "Processing", "Shipped", "Delivered"];
-  const currentStep = statuses.indexOf(order.status);
+  const statuses = ["Pending", "Confirmed", "Shipped", "Delivered"];
+  const currentStatus =
+    order.status?.charAt(0).toUpperCase() +
+    order.status?.slice(1).toLowerCase();
+  const currentStep = statuses.indexOf(currentStatus);
+
+  const formattedAddress =
+    typeof order.shippingAddress === "object"
+      ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}, ${order.shippingAddress.street}, ${order.shippingAddress.city}, ${order.shippingAddress.district}`
+      : order.shippingAddress;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6 overflow-hidden">
+    <div className="fixed inset-0 z-[1100] flex items-end sm:items-center justify-center p-0 sm:p-6 overflow-hidden">
       {/* 1. Cinematic Overlay */}
       <div
         className="absolute inset-0 bg-[#0B1221]/60 backdrop-blur-md transition-opacity duration-700"
@@ -55,7 +64,7 @@ export function OrderDetailModal({
             </h2>
             <div className="flex items-center gap-3 mt-2">
               <span className="text-[10px] font-black text-[#0B1221]/40 uppercase tracking-widest">
-                {order.id}
+                #{order.orderId || order._id}
               </span>
               <div className="w-1 h-1 rounded-full bg-blue-600/30" />
               <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
@@ -147,7 +156,11 @@ export function OrderDetailModal({
                 >
                   <div className="relative w-20 h-20 bg-white rounded-[1.5rem] overflow-hidden border border-black/5 shrink-0 group-hover:scale-105 transition-transform duration-700">
                     <Image
-                      src={item.image}
+                      src={resolveImageUrl(
+                        item.image ||
+                          item.product?.images?.[0] ||
+                          "/placeholder.jpg",
+                      )}
                       alt={item.name}
                       fill
                       className="object-cover"
@@ -161,6 +174,10 @@ export function OrderDetailModal({
                       {item.name}
                     </h4>
                     <div className="flex items-center gap-3 mt-1">
+                      <span className="text-[9px] font-black text-[#0B1221]/30 uppercase tracking-widest">
+                        SKU: {item.sku || "N/A"}
+                      </span>
+                      <div className="w-1 h-1 bg-black/5 rounded-full" />
                       <span className="text-[9px] font-black text-[#0B1221]/30 uppercase tracking-widest">
                         Size: {item.size}
                       </span>
@@ -203,7 +220,7 @@ export function OrderDetailModal({
                       Shipping Address
                     </h4>
                     <p className="text-[11px] text-[#0B1221] font-bold uppercase tracking-tight leading-relaxed">
-                      {order.shippingAddress}
+                      {formattedAddress}
                     </p>
                   </div>
                 </div>
