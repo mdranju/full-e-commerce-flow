@@ -1,27 +1,34 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 
-import authReducer from './slices/authSlice';
-import userReducer from './slices/userSlice';
-import cartReducer from './slices/cartSlice';
-import productReducer from './slices/productSlice';
-import orderReducer from './slices/orderSlice';
-import uiReducer from './slices/uiSlice';
+import authReducer from "./slices/authSlice";
+import cartReducer from "./slices/cartSlice";
+import uiReducer from "./slices/uiSlice";
+import { baseApi } from "./api/baseApi";
+import { adminApi } from "./api/adminApi";
 
 const rootReducer = combineReducers({
+  [baseApi.reducerPath]: baseApi.reducer,
+  [adminApi.reducerPath]: adminApi.reducer,
   auth: authReducer,
-  user: userReducer,
   cart: cartReducer,
-  product: productReducer,
-  order: orderReducer,
   ui: uiReducer,
 });
 
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
-  whitelist: ['cart', 'auth'], // Only persist the cart and authentication states
+  whitelist: ["cart", "auth"], // Only persist cart and auth
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -33,7 +40,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }),
+    }).concat(baseApi.middleware, adminApi.middleware),
 });
 
 export const persistor = persistStore(store);
