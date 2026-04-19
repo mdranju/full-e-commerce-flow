@@ -68,10 +68,10 @@ export function Sidebar() {
           ) : (
             <>
               <div className="w-10 h-10 bg-[#0B1221] rounded-xl flex items-center justify-center shadow-lg shadow-black/10">
-                <span className="text-white text-xl font-black italic">S.</span>
+                <span className="text-white text-xl font-black italic">A.</span>
               </div>
               <span className="text-xl font-black text-[#0B1221] tracking-tighter">
-                SEIVIBE <span className="text-blue-600">.</span>
+                AVLORAWEAR <span className="text-blue-600">.</span>
               </span>
             </>
           )}

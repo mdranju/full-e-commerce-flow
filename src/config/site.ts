@@ -1,19 +1,19 @@
 export const SITE_CONFIG = {
-  name: "Seivibe",
-  domain: "seivibe.com",
-  baseUrl: "https://seivibe.com",
+  name: "Avlorawear",
+  domain: "avlorawear.com",
+  baseUrl: "https://avlorawear.com",
   apiUrl: process.env.NEXT_PUBLIC_API_URL,
-  email: "contact@seivibe.com",
+  email: "contact@avlorawear.com",
   socials: {
-    facebook: "https://facebook.com/seivibe",
-    instagram: "https://instagram.com/seivibe",
+    facebook: "https://facebook.com/avlorawear",
+    instagram: "https://instagram.com/avlorawear",
   },
   meta: {
-    title: "Seivibe - Elevate Your Fashion Vibe",
+    title: "Avlorawear - Elevate Your Fashion Vibe",
     description:
-      "Seivibe is your digital-first fashion destination. Discover trendy, modern, and stylish apparel designed for the global youth.",
+      "Avlorawear is your digital-first fashion destination. Discover trendy, modern, and stylish apparel designed for the global youth.",
     keywords: [
-      "Seivibe",
+      "Avlorawear",
       "Trendy Fashion",
       "Modern Apparel",
       "Digital Fashion",
@@ -26,8 +26,8 @@ export const SITE_CONFIG = {
     mission:
       "Delivering a stylish, accessible, and premium fashion experience that empowers self-expression globally.",
     valueProposition:
-      "Seivibe blends cutting-edge digital trends with premium quality, created for those who live life in the spotlight.",
+      "Avlorawear blends cutting-edge digital trends with premium quality, created for those who live life in the spotlight.",
     customerFocus:
-      "We design for the trendsetters and the bold. Every Seivibe piece is a statement of confidence, style, and modern identity.",
+      "We design for the trendsetters and the bold. Every Avlorawear piece is a statement of confidence, style, and modern identity.",
   },
 };

@@ -1,13 +1,13 @@
-# Backend API Specification — Seivibe
+# Backend API Specification — Avlorawear
 
-This document provides a comprehensive blueprint for the backend API required to support the Seivibe frontend application.
+This document provides a comprehensive blueprint for the backend API required to support the Avlorawear frontend application.
 
 ---
 
 ## 🛰️ General Information
 
 ### Base URL
-`https://api.seivibe.com/v1`
+`https://api.avlorawear.com/v1`
 
 ### Default Headers
 - `Content-Type: application/json`
